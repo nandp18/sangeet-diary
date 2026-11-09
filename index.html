@@ -848,6 +848,7 @@
   /* Recordings: the full-screen pitch graph */
   .recv { position: fixed; inset: 0; z-index: 96; background: var(--st-bg); color: var(--st-ink); display: flex; flex-direction: column; }
   .recv[hidden] { display: none; }
+  .mo-dim { position: fixed; inset: 0; z-index: 40; background: #000; opacity: 0; pointer-events: none; will-change: opacity; }
   .rv-top { display: flex; align-items: center; gap: 12px; padding: 10px 16px 0; padding-top: max(10px, env(safe-area-inset-top)); }
   .rv-h { min-width: 0; }
   .rv-title { font-family: var(--display); font-size: 19px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -1020,6 +1021,28 @@
   @media (max-width: 640px) { .recv .rv-tabs { display: flex; width: 100%; } .recv .rv-tabs button { flex: 1; justify-content: center; padding: 0 8px; font-size: 14px; } }
   @media (max-width: 440px) { .recv .rv-tabs button { flex: 1 1 auto; min-width: 0; padding: 0 4px; gap: 2px; font-size: 12.5px; } }
   .recv h3 { font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--st-accent); margin: 30px 0 8px; }
+  /* the rāg's phrases: the ✦ in the bar, and plain ruled rows at the top of the Phrases tab (0873) */
+  .mo-star { width: 12px; height: 12px; fill: currentColor; flex: none; }
+  .rv-mo { display: inline-flex; align-items: center; gap: 6px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .rv-mo[hidden] { display: none; }
+  .rv-mo.pop .mo-star { animation: moChip .46s var(--spring-ease); }
+  @keyframes moChip { 0% { transform: scale(.6) rotate(-30deg); } 55% { transform: scale(1.5) rotate(12deg); } 100% { transform: none; } }
+  .mo-row { display: grid; grid-template-columns: minmax(0, 1fr) 76px auto auto; gap: 4px 14px; align-items: center; padding: 10px 0; border-top: 1px solid rgb(var(--st-ink-rgb) / 0.08); }
+  .mo-row:last-child { border-bottom: 1px solid rgb(var(--st-ink-rgb) / 0.08); margin-bottom: 8px; }
+  .mo-sv { font-size: 16px; font-weight: 600; display: flex; flex-wrap: wrap; gap: 2px 7px; }
+  .mo-kind { font-size: 13px; color: rgb(var(--st-ink-rgb) / 0.62); white-space: nowrap; }
+  .mo-at { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 2px 10px; font-size: 13px; font-variant-numeric: tabular-nums; color: rgb(var(--st-ink-rgb) / 0.62); }
+  .mo-at a { color: var(--st-ink); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: rgb(var(--st-ink-rgb) / 0.25); padding: 4px 0; }
+  .mo-at a:hover { text-decoration-color: currentColor; }
+  .mo-at .m { color: rgb(var(--st-ink-rgb) / 0.5); }
+  .mo-n { font-weight: 600; color: var(--st-ink); }
+  /* a phone's bar is one full row: the ✦ floats just above its right end, still under the thumb */
+  @media (max-width: 560px) { .rv-bar .rv-mo { position: absolute; right: 12px; bottom: calc(100% + 8px); height: 36px; padding: 0 12px; background: var(--st-card); box-shadow: 0 2px 10px rgb(0 0 0 / 0.14); } }
+  .mo-row .rpa { grid-column: auto; margin: 0; padding: 0; }
+  .mo-row .rpa .pbtn { height: 34px; min-width: 0; padding: 0 12px; font-size: 13px; }
+  .mo-row .rv-nk { grid-column: 1 / -1; }
+  @media (max-width: 560px) { .mo-row { grid-template-columns: minmax(0, 1fr) auto; } .mo-at { grid-column: 1; grid-row: 2; justify-content: flex-start; } .mo-kind { grid-row: 1; grid-column: 2; text-align: right; } .mo-row .rpa { grid-column: 2; grid-row: 2; justify-self: end; } }
+  @media (prefers-reduced-motion: reduce) { .rv-mo.pop .mo-star { animation: none; } }
   .rph { display: grid; grid-template-columns: 92px 1fr auto; gap: 4px 14px; align-items: start; padding: 10px 12px; border-radius: 12px; }
   .rph.now { background: rgba(255, 125, 56, 0.1); }
   #rvPhrases .rph { content-visibility: auto; contain-intrinsic-size: auto 104px; } /* off-screen phrases skip layout */
@@ -1919,6 +1942,7 @@
 </div>
 
 <div class="recv" id="recv" role="dialog" aria-modal="true" aria-label="Recording" hidden>
+  <div class="mo-dim" id="moDim" aria-hidden="true"></div>
   <div class="rv-top">
     <button type="button" class="pbtn" id="rvClose" aria-label="Close">✕</button>
     <div class="rv-h"><div class="rv-title" id="rvTitle"></div><div class="rv-meta" id="rvMeta"></div><div class="rv-guess" id="rvGuess"></div></div>
@@ -1929,7 +1953,8 @@
     <span class="rv-grp"><select id="rvRate" aria-label="Speed"><option value="0.5">0.5×</option><option value="0.75">0.75×</option><option value="1" selected>1×</option></select>
     <button type="button" class="pbtn" id="rvLoop" aria-pressed="false" title="Loop the phrase under the cursor (L). Shift-click (Shift-L) adds the phrase under the cursor to the loop; or + Loop on any phrase below. Video → The loop makes a video of it">Loop</button>
     <button type="button" class="pbtn" id="rvFollow" aria-pressed="true" title="Keep the cursor in view while playing">Follow</button>
-    <button type="button" class="pbtn rv-sing" id="rvSing" aria-pressed="false" title="Sing over it: the mic draws your pitch over the teacher’s, and each phrase gets a match">Sing</button></span>
+    <button type="button" class="pbtn rv-sing" id="rvSing" aria-pressed="false" title="Sing over it: the mic draws your pitch over the teacher’s, and each phrase gets a match">Sing</button>
+    <button type="button" class="pbtn rv-mo" id="rvMo" hidden></button></span>
     <span class="rv-sp"></span>
     <span class="rv-seg" role="group" aria-label="Zoom"><button type="button" class="pbtn" id="rvOut" aria-label="Zoom out">−</button><button type="button" class="pbtn" id="rvIn" aria-label="Zoom in">+</button><button type="button" class="pbtn" id="rvFit" title="Show the phrase under the cursor">Fit</button></span>
     <span class="rv-more"><button type="button" class="pbtn" id="rvMoreBtn" aria-label="More: sync, Sa, keyboard, video, details" aria-expanded="false" aria-controls="rvMore">⋯</button>
@@ -1947,6 +1972,7 @@
     <div class="rv-tabw"><div class="seg rv-tabs" id="rvTabs" aria-label="Under the graph"></div></div>
     <section class="rv-tab" data-tab="practice" role="tabpanel" aria-label="Practice"><div id="rvHard"></div></section>
     <section class="rv-tab" data-tab="phrases" role="tabpanel" aria-label="Phrases" hidden>
+      <div id="rvMoments" hidden></div>
       <h3>To sing from</h3><div class="rv-seq" id="rvSeq"></div>
       <p class="rv-hint">A dash per ~0.6 s held · (X)Y a kaṇ of X on Y · X~Y a meend · ≈ andolan, ≋ gamak · ? outside the rāg's scale. Unsure notes are left out.</p>
       <h3>Phrase by phrase</h3><div id="rvPhrases"></div>
@@ -5438,6 +5464,22 @@ let recDel = id => { recBury(id); return recDrop(id); }; // 0894-my-pages wraps 
 const REC_MAGIC = 'SDREC1\n';
 const recBackupInfo = () => { try { return JSON.parse(localStorage.getItem('bandish.recBackup')) || {}; } catch { return {}; } };
 const recChanged = r => r.changed || r.added;
+// your settings go in a whole backup too (Sa, tempos, what you've practiced, the graph's own choices), for a new device
+// or address. Restore fills in only what isn't set here yet, as it leaves a recording that's already here alone. The
+// audio sync offset stays behind: it belongs to the device's own speakers.
+const REC_SETTINGS = ['rv.keys', 'rl.group', 'bandish.rvDetails'];
+function recSettings() {
+  const view = {};
+  try { for (const k of REC_SETTINGS) { const v = localStorage.getItem(k); if (v != null) view[k] = v; } } catch {}
+  return { prefs: PREFS, view };
+}
+function recSettingsMerge(s) {
+  if (!s) return 0;
+  let n = 0;
+  for (const [k, v] of Object.entries(s.prefs || {})) if (!(k in PREFS)) { savePref(k, v); n++; }
+  try { for (const k of REC_SETTINGS) if (s.view?.[k] != null && localStorage.getItem(k) == null) { localStorage.setItem(k, s.view[k]); n++; } } catch {}
+  return n;
+}
 // ids: only those (a few picked on the Recordings page); otherwise all of them
 async function recBackupFile(ids = null) {
   const all = (await recTx('readonly', st => st.getAll())).filter(r => !ids || ids.includes(r.id));
@@ -5450,7 +5492,7 @@ async function recBackupFile(ids = null) {
   const keep = new Set(all.map(r => r.id)), takes = [];
   for (const { audio, line, ...rest } of (await takeAll()).filter(t => keep.has(t.rec) || (!ids && (t.rec === 'free' || t.rec === 'perform')))) // and those sung freely or along in Perform, in a whole backup
     takes.push({ ...rest, audioType: audio.type, audio: add(audio), line: add(new Blob([line])) });
-  const head = new TextEncoder().encode(JSON.stringify({ format: 'sangeet-diary-recordings', version: 1, made: new Date().toISOString(), recordings: index, takes, deleted: recDead() }));
+  const head = new TextEncoder().encode(JSON.stringify({ format: 'sangeet-diary-recordings', version: 1, made: new Date().toISOString(), recordings: index, takes, deleted: recDead(), ...(ids ? {} : { settings: recSettings() }) }));
   const len = new DataView(new ArrayBuffer(4)); len.setUint32(0, head.length, true);
   return { blob: new Blob([REC_MAGIC, len.buffer, head, ...parts], { type: 'application/octet-stream' }), count: all.length };
 }
@@ -5484,7 +5526,7 @@ async function recRestore(file) {
     added++;
   }
   await takeMerge(head, unpackTake);
-  return { added, skipped };
+  return { added, skipped, settings: recSettingsMerge(head.settings) };
 }
 
 /* ---- processing ------------------------------------------------------------------------------------ */
@@ -5745,7 +5787,7 @@ function initRecs() {
   $('recRs').addEventListener('click', () => $('recRsFile').click());
   $('recRsFile').addEventListener('change', async e => {
     const f = e.target.files[0]; e.target.value = ''; if (!f) return;
-    try { const { added, skipped } = await recRestore(f); alert(`Restored ${added} recording${added === 1 ? '' : 's'}${skipped ? `; ${skipped} ${skipped === 1 ? 'was' : 'were'} already on this device` : ''}.`); }
+    try { const { added, skipped, settings } = await recRestore(f); alert(`Restored ${added} recording${added === 1 ? '' : 's'}${skipped ? `; ${skipped} ${skipped === 1 ? 'was' : 'were'} already on this device` : ''}${settings ? ', and your settings' : ''}.`); if (settings) { await myPagesRefresh(); return location.reload(); } }
     catch (err) { alert(`Couldn't restore: ${err.message || err}`); }
     renderRecs(); renderRecBackup();
   });
@@ -5805,7 +5847,7 @@ function initRecs() {
   $('rvFit').addEventListener('click', () => rvShow(rvPhraseAt(rvNow())));
   $('rvKey').addEventListener('change', e => { try { localStorage.setItem('rv.keys', e.target.value); } catch {} rvAnalyse(); });
   $('rvSa').addEventListener('change', async e => { const r = REC.cur; r.sa = e.target.value ? +e.target.value : null; r.changed = new Date().toISOString(); await recPut(r); rvAnalyse(); renderRecBackup(); });
-  rvPointer(); rvMoreInit(); rvTabsInit(); initChords();
+  rvPointer(); rvMoreInit(); rvTabsInit(); initChords(); moInit();
   initRecLines();
   initRecPractice(); initRecVideo(); initSing(); initTakes(); initFree(); initProgress(); initPerformSing(); initRaags();
   initRecSheet(); initRecSync();
@@ -5988,6 +6030,7 @@ function rvAnalyse() {
   const sc = piece ? piece.scale : rg?.scale, raagName = piece ? piece.raagName : rg?.name || '', svaras = sc ? [...new Set([...sc.asc, ...sc.desc].map(t => SV_SEMI[t]))].sort((a, b) => a - b) : null;
   const A = REC.A = recCore().analyse({ hop: r.hop, hz: r.hz, rms: r.rms }, { sa: r.sa, svaras, raagName, saNear: r.sa ? null : r.saMix || REC.saNear || r.raagSa || recSaUsual(r) });
   A.raag = svaras && { name: raagName, svaras };
+  moAnalyse(r, A); // the rāg's phrases sung in it (0873)
   // kept, so the piece's other recordings (and its practice list) can go by it
   if (!r.sa && Math.abs(1200 * Math.log2(A.sa / (r.saFound || 1))) > 3) { r.saFound = A.sa; recPut(r).catch(() => {}); }
   REC.place = new Map(); // where each marked line's svaras fall depends on Sa
@@ -6005,7 +6048,7 @@ function rvAnalyse() {
   $('rvMeta').innerHTML = [who && (who === 'me' ? 'You singing' : who === 'teacher' ? 'Your teacher' : homeEsc(who)), A.raag && `Rāg <b>${A.raag.name}</b>`, `Sa <b>${rvWest(A.sa, REC.details)}</b>${REC.details ? ` (${A.sa.toFixed(1)} Hz${r.sa ? '' : ', as heard'})` : r.sa ? '' : ' (as heard)'}`, rvMine() && !same && `keys: Sa on <b>${HARMONIUM[rvPc(my)]}</b>`, `${recDur(A.duration)}`, `${A.phrases.length} phrases`, r.voice && '<span title="The harmonium, tabla and keyboard were taken out on your Mac before the pitch was read; you hear the recording as it was">line from the voice alone</span>'].filter(Boolean).join(' · ');
   // which rāg it sounds like (0862): to choose one for a recording without a page; for the others, a check
   $('rvGuess').innerHTML = raagGuessHTML(raagGuessOf(r, r.saMix || REC.saNear), { set: !piece, id: r.id, is: piece ? piece.raagId : r.raagId || '' });
-  rvBreakdown();
+  rvBreakdown(); moPanel();
   rvDraw();
   CH.sheetSig = ''; if (RV_TAB === 'chords') chSheetRender(); else chSheetCount(); // the chord sheet (0872), its names on this Sa
 }
@@ -6364,6 +6407,7 @@ function rvDraw() {
     const f = 'italic 500 11px Inter, sans-serif', w = tw('kaṇ', f) + 6, up = A.contour[i] > rvRef(k) - 1;
     labels.push(() => { if (pxs > 40 && room(xx - w / 2, yy + (up ? -21 : 9), w, 14)) say('kaṇ', xx, yy + (up ? -14 : 16), f, 0.55); });
   }
+  if (!OUT) moMarks(g, x, bot, colOf, P.l, W - P.r); // ✦ where the rāg's phrases are sung (0873)
   for (const L of labels) L();
   if (!OUT && RVY.pin) say('all', 4, Hh - 9, '600 11px Inter, sans-serif', 0.45, 'left'); // the pitch range pinned to the whole recording
   // hovering: a hairline and a ringed dot where the pointer reads the pitch
@@ -6374,7 +6418,7 @@ function rvDraw() {
   }
   g.restore(); chLane(g, x, W, Hh, bot, colOf, ink, CARD); rvDrawStrip(g, x, W, Hh, colOf);
   }
-  if (!OUT) { g = G0; g.clearRect(0, 0, W, Hh); g.drawImage(RV_LAYER.plot, 0, 0, W, Hh); }
+  if (!OUT) { g = G0; g.clearRect(0, 0, W, Hh); g.drawImage(RV_LAYER.plot, 0, 0, W, Hh); moDim(g, W, Hh, A, V); } // the page dims for a rāg phrase (0873)
   // the playhead: the accent, its time in a chip at the top, and a glowing dot on the voice in its svara's colour
   g.save(); g.beginPath(); g.rect(P.l - 30, 0, W - P.l - P.r + 60, Hh); g.clip();
   const cc = A.contour[Math.round(ct / H)];
@@ -6389,6 +6433,7 @@ function rvDraw() {
       g.stroke(); g.restore();
     }
   }
+  if (!OUT) moFrame({ g, x, y, top, bot, l: P.l, r: W - P.r, colOf, CARD, ct, A, H, V, au }); // a rāg phrase, as it's sung (0873)
   if (!OUT) singDraw(g, x, y, V.t0, t1, H, top, bot, P.l, W - P.r, ME, CARD); // your line, live or a take's, over the teacher's glow (0893)
   if (cx >= P.l - 1 && cx <= W - P.r + 1) {
     g.fillStyle = ACC; g.fillRect(cx - 0.75, 20, 1.5, bot - 20);
@@ -6421,8 +6466,10 @@ function rvDraw() {
       q.font = '600 9px Inter, sans-serif'; q.textBaseline = 'top'; q.textAlign = 'left'; q.fillStyle = ink(0.38);
       let lastX = -1e9;
       A.phrases.forEach((p, i) => { const px = X(p.s * H); if (px - lastX < 26 || !p.units.length) return; q.fillRect(px, 0, 1, 4); q.fillText(String(i + 1), px + 2, 1); lastX = px; });
+      moOverMarks(q, X, h, colOf); // 0873
     }
     o.drawImage(O, 0, 0, w, h);
+    moOverPop(o, X, h, colOf);
     // the piece's sections (sthāyī, antarā…), where its found or marked lines say they're sung: a tinted span each
     {
       const secs = [];
@@ -6447,6 +6494,7 @@ function rvDraw() {
   if (!RVN.raf) rvKeys(isNaN(cc) ? null : rvNear(cc), !isNaN(cc) && A.phrases.some(p => p.units.some(u => u.type === 'note' && u.conf !== 'low' && ct >= u.s * H && ct < u.e * H)), colOf);
   if (REC.card != null) { const cv = $('rvHard').querySelector(`.pp.live .pp-spark`); if (cv) recSpark(cv, A.phrases[REC.card], A, ct); }
   // the page's text is written last: a write before the canvases' sizes are read would lay the page out again
+  moChip(ct);
   const tm = rvFmt(ct), te = $('rvTime'); if (te.textContent !== tm) te.textContent = tm;
   if (now !== rvLastPh) { rvLastPh = now; $('recv').querySelectorAll('.rph.now').forEach(e => e.classList.remove('now')); if (now >= 0) $('recv').querySelectorAll(`.rph[data-i="${now}"]`).forEach(e => e.classList.add('now')); }
 }
@@ -6529,6 +6577,9 @@ function rvPointer() {
     } else if (drag && !drag.moved && !pinch && !REC.mark && chLaneAt(e) >= 0) {
       // a tap on a chord in the lane (0872): why that chord, until the next touch
       chTip(e, chLaneAt(e), e.pointerType !== 'mouse');
+    } else if (drag && !drag.moved && !pinch && onRibbon && !REC.mark && moAt(e.clientX, main.getBoundingClientRect(), t => P.l + (t - REC.V.t0) / REC.V.span * (main.clientWidth - P.l - P.r), e.pointerType === 'touch') >= 0) {
+      // a tap on a ✦: that rāg phrase, from a little before (0873)
+      moGo(moAt(e.clientX, main.getBoundingClientRect(), t => P.l + (t - REC.V.t0) / REC.V.span * (main.clientWidth - P.l - P.r), e.pointerType === 'touch'));
     } else if (drag && !drag.moved && !pinch && onRibbon && !REC.mark) {
       // a tap on a phrase's ribbon: that phrase looped (a tap on the one looped lets it go)
       const p = rvPhraseAt(t), H = REC.A.hop;
@@ -6572,7 +6623,12 @@ function rvPointer() {
   }, { passive: false });
   let od = false;
   const overTo = e => { const r = over.getBoundingClientRect(), V = REC.V; V.t0 = (e.clientX - r.left) / r.width * REC.A.duration - V.span / 2; rvClamp(); rvDraw(); };
-  over.addEventListener('pointerdown', e => { rvCamStop(); over.setPointerCapture(e.pointerId); od = true; overTo(e); });
+  over.addEventListener('pointerdown', e => {
+    // a tap on a ✦ along the bottom of the strip goes to that rāg phrase (0873); anywhere else moves the view
+    const r = over.getBoundingClientRect(), mo = e.clientY - r.top > r.height - 18 ? moAt(e.clientX, r, t => t / REC.A.duration * r.width, e.pointerType === 'touch') : -1;
+    if (mo >= 0) return moGo(mo);
+    rvCamStop(); over.setPointerCapture(e.pointerId); od = true; overTo(e);
+  });
   over.addEventListener('pointermove', e => { if (od) overTo(e); });
   over.addEventListener('pointerup', () => { od = false; });
 }
@@ -7344,6 +7400,427 @@ function initChords() {
   });
   chControls();
   chSheetInit();
+}
+/* ------------------------------------------------------------------ *
+ *  Rāg phrase moments. When a recording sings one of its rāg's characteristic phrases (n D N Ṡ in Miyān Malhār), the
+ *  graph marks the place and celebrates it as it's played, and the singer can go straight to every one.
+ *
+ *  A phrase comes from the recording's own rāg: its pakad, the pakads in your lesson notes, and the svara runs named
+ *  in its Listen for line. It's looked for in the svaras the graph found (never its unsure ones), at the graph's Sa.
+ *  Only for a recording whose rāg is on its page or set by you: a guess could be wrong, and then it would sparkle on
+ *  the wrong notes. Self-contained (no app globals) down to "in the app", so the tests run it on its own.
+ * ------------------------------------------------------------------ */
+function momentsCore() {
+  const SEMI = { S: 0, r: 1, R: 2, g: 3, G: 4, m: 5, M: 6, P: 7, d: 8, D: 9, n: 10, N: 11 };
+  const mod = (k, n) => ((k % n) + n) % n;
+  /* how close it has to be: a short passing note (under `pass` seconds) may sit inside a phrase, once; two notes of
+   * a phrase are at most `gap` seconds apart; a phrase is dropped if other rāgs' notation uses it more than `common`
+   * times per 1000 notes, however much this rāg's own does (Des sings n D P all the time, and so does everything near it) */
+  const OPT = { pass: 0.2, gap: 0.9, same: 0.5, common: 3 };
+
+  // written svaras → runs of notes (semitones from Sa, with octave): a comma or a word ends a run. Read as phraseHTML
+  // (04) reads them: capitals or lowercase komal, underlined or not, m and M shuddha, M̍ tīvra, dots for the octave
+  function runsOf(text) {
+    const clean = String(text || '').replace(/\s*<span class="pk-src">[^<]*<\/span>/g, '')
+      .replace(/\s*(?:<span[^>]*>)?\(([^()]*[a-z]{3,}[^()]*)\)(?:<\/span>)?/g, ' , ').replace(/<\/?span[^>]*>/g, ' ').replace(/[()]/g, ' , ')
+      .normalize('NFD').replace(/<u>([SRGMPDNsrgmpdn])([̣̇̍]*)<\/u>/g, (_, l, mk) => l.toUpperCase() + mk + '̲');
+    const runs = [[]];
+    for (const w of clean.split(/\s+/)) {
+      if (!w) continue;
+      const m = w.match(/^([SRGMPDNsrgmpdn])([̲̣̇̍]*)([,;.:]?)$/);
+      if (!m) { runs.push([]); continue; }
+      let [, L, marks, stop] = m;
+      if (L !== L.toUpperCase()) { if ('rgdn'.includes(L) && !marks.includes('̲')) marks += '̲'; L = L.toUpperCase(); }
+      const tok = marks.includes('̲') && 'RGDN'.includes(L) ? L.toLowerCase() : L === 'M' && !marks.includes('̍') ? 'm' : L;
+      runs.at(-1).push(SEMI[tok] + 12 * ((marks.match(/̇/g) || []).length - (marks.match(/̣/g) || []).length));
+      if (stop) runs.push([]);
+    }
+    return runs.filter(r => r.length);
+  }
+  const collapse = ns => ns.filter((x, i) => !i || x !== ns[i - 1]);
+  /* A pakad's commas are breaths, and a piece between two can be a note or two ("n D, M P, D, M G"): short pieces join
+   * the next until there are three notes to go on. What's left at the end hangs off the note before it */
+  function piecesOf(runs) {
+    const out = []; let acc = [];
+    for (const r of runs) { acc = collapse([...acc, ...r]); if (acc.length >= 3) { out.push(acc); acc = []; } }
+    if (acc.length && out.length) { const tail = collapse([out.at(-1).at(-1), ...acc]); if (tail.length >= 3) out.push(tail); }
+    return out;
+  }
+  // a rāg's phrases. shape: its octaves are written, so the shape has to match; without dots (Listen for) only the
+  // svaras do
+  function phrasesOf(raag) {
+    const out = [], seen = new Set();
+    const info = re => (raag.info || []).filter(i => re.test(i[0])).map(i => i[1]);
+    const add = (kind, notes, shape, src) => {
+      const key = notes.map(p => mod(p, 12)).join();
+      if (seen.has(key)) return; seen.add(key);
+      out.push({ kind, notes, shape, src });
+    };
+    for (const t of info(/^Pakad/)) {
+      const src = t.match(/<span class="pk-src">\(([^<]*)\)<\/span>/)?.[1] || '';
+      for (const f of piecesOf(runsOf(t))) add('Pakad', f, true, src);
+    }
+    for (const lesson of raag.mine || []) for (const l of lesson.lines || []) {
+      const m = String(l).match(/^Pakad:\s*(.*)$/i); if (!m) continue;
+      for (const f of piecesOf(runsOf(m[1]))) add('Pakad', f, true, `Your lesson notes, ${lesson.when || lesson.date || ''}`.replace(/, $/, ''));
+    }
+    for (const t of info(/^Listen for/)) for (const r of runsOf(t)) { const f = collapse(r); if (f.length >= 3) add('Its mark', f, false, ''); }
+    return out;
+  }
+  // how often svaras follow one another in order, in notation already collapsed (null a break): octaves don't count
+  function hits(seq, pcs) {
+    let n = 0;
+    for (let i = 0; i + pcs.length <= seq.length; i++) {
+      let ok = true;
+      for (let j = 0; j < pcs.length; j++) if (seq[i + j] == null || mod(seq[i + j], 12) !== pcs[j]) { ok = false; break; }
+      if (ok) n++;
+    }
+    return n;
+  }
+  /* A phrase other rāgs use just as much says nothing about this one (Des's n D P): dropped, by the notation in the
+   * app. corpus: [{ raagId, seq }] */
+  function distinct(phrases, raagId, corpus, opt = OPT) {
+    let ownN = 0, otherN = 0;
+    for (const c of corpus) { const n = c.seq.filter(x => x != null).length; if (c.raagId === raagId) ownN += n; else otherN += n; }
+    return phrases.filter(ph => {
+      const pcs = ph.notes.map(p => mod(p, 12)); let own = 0, other = 0;
+      for (const c of corpus) { const h = hits(c.seq, pcs); if (c.raagId === raagId) own += h; else other += h; }
+      const oth = otherN ? other / otherN * 1000 : 0, mine = ownN ? own / ownN * 1000 : 0;
+      ph.other = oth; ph.own = mine;
+      return oth <= opt.common;
+    });
+  }
+  // the graph's sure notes in order, a svara sung again at once being one note
+  function notesOf(A) {
+    const out = [], H = A.hop;
+    for (const p of A.phrases) for (const u of p.units) {
+      if (u.type !== 'note' || u.conf === 'low') continue;
+      const last = out.at(-1);
+      if (last && last.semi === u.semi && (u.s - last.e) * H < OPT.same) { last.e = u.e; continue; }
+      out.push({ semi: u.semi, s: u.s, e: u.e });
+    }
+    return out;
+  }
+  function matchAt(ns, i, ph, H, opt) {
+    const P = ph.notes, n0 = ns[i];
+    if (mod(n0.semi, 12) !== mod(P[0], 12)) return null;
+    const fits = (n, j) => (ph.shape ? n.semi - n0.semi === P[j] - P[0] : mod(n.semi, 12) === mod(P[j], 12));
+    const got = [n0]; let k = i, passed = false;
+    for (let j = 1; j < P.length; j++) {
+      const a = ns[k], b = ns[k + 1], c = ns[k + 2];
+      const near = (x, from) => x && (x.s - from.e) * H <= opt.gap;
+      if (near(b, a) && fits(b, j)) { got.push(b); k += 1; }
+      else if (!passed && near(c, a) && (b.e - b.s) * H < opt.pass && fits(c, j)) { got.push(c); k += 2; passed = true; }
+      else return null;
+    }
+    return got;
+  }
+  /* Every place the phrases are sung, in time order; where two overlap the longer one stands.
+   * Each: { phrase, notes: [{ semi, s, e }], on, land, end } (frames in notes, seconds in the rest) */
+  function find(A, phrases, opt = OPT) {
+    const ns = notesOf(A), H = A.hop, all = [];
+    phrases.forEach(ph => { for (let i = 0; i < ns.length; i++) { const got = matchAt(ns, i, ph, H, opt); if (got) all.push({ phrase: ph, notes: got }); } });
+    all.sort((a, b) => b.notes.length - a.notes.length || a.notes[0].s - b.notes[0].s);
+    const kept = [];
+    for (const m of all) if (!kept.some(o => m.notes[0].s < o.notes.at(-1).e && o.notes[0].s < m.notes.at(-1).e)) kept.push(m);
+    return kept.sort((a, b) => a.notes[0].s - b.notes[0].s).map(m => ({ ...m, on: m.notes[0].s * H, land: m.notes.at(-1).s * H, end: m.notes.at(-1).e * H }));
+  }
+  return { runsOf, piecesOf, phrasesOf, distinct, find, OPT };
+}
+
+// in the app: finding them for the open recording
+const MO = { core: null, corpus: null, go: -1, last: -1, cur: null, stars: [], burst: -1e9, at: 0, raf: 0, dim: 0, dimA: 0, dimAt: 0, hole: '', sig: '', shown: -1 };
+function moCorpus() {
+  if (MO.corpus) return MO.corpus;
+  raagSetup();
+  return MO.corpus = BANDISHES.filter(b => !b.mine && b.raagId).map(b => {
+    const seq = []; for (const x of RAAG_ID.core.notesOf(b)) { if (!x) { if (seq.at(-1) != null) seq.push(null); continue; } if (seq.at(-1) !== x.p) seq.push(x.p); }
+    return { raagId: b.raagId, seq };
+  });
+}
+function moAnalyse(r, A) {
+  MO.dim = 0; // a new recording starts undimmed
+  MO.core ??= momentsCore();
+  MO.go = -1; MO.last = -1; MO.cur = null; MO.stars.length = 0; MO.sig = '';
+  A.moPhrases = []; A.moments = [];
+  const id = raagLabel(r), raag = id && RAAGS.find(x => x.id === id);
+  if (!raag?.scale) return;
+  A.moPhrases = MO.core.distinct(MO.core.phrasesOf(raag), id, moCorpus());
+  A.moments = MO.core.find(A, A.moPhrases);
+}
+
+/* ---- finding them quickly: the ✦ marks, the stepper in the bar, and the list at the top of the Phrases tab ---- */
+const MO_STAR = '<svg class="mo-star" viewBox="0 0 12 12" aria-hidden="true"><path d="M6 0Q6 6 12 6Q6 6 6 12Q6 6 0 6Q6 6 6 0"/></svg>';
+function moStarPath(g, x, y, z) {
+  g.beginPath(); g.moveTo(x, y - z); g.quadraticCurveTo(x, y, x + z, y); g.quadraticCurveTo(x, y, x, y + z);
+  g.quadraticCurveTo(x, y, x - z, y); g.quadraticCurveTo(x, y, x, y - z); g.fill();
+}
+const moMid = m => (m.on + m.end) / 2;
+const moKey = m => m.notes.at(-1).semi;
+// on the plot, in the row above each phrase's rule
+function moMarks(g, x, bot, colOf, l, r) {
+  for (const m of REC.A.moments || []) {
+    const mx = x(moMid(m)); if (mx < l || mx > r) continue;
+    g.fillStyle = colOf(moKey(m)); moStarPath(g, mx, bot + 9, 6);
+  }
+}
+// on the strip of the whole recording, drawn once with its line
+function moOverMarks(q, X, h, colOf) {
+  for (const m of REC.A.moments || []) { q.fillStyle = colOf(moKey(m)); moStarPath(q, X(moMid(m)), h - 7, 4.5); }
+}
+// the one just sung gives a small pop there
+function moOverPop(o, X, h, colOf) {
+  const now = performance.now();
+  for (const m of REC.A.moments || []) {
+    if (!m.pop) continue;
+    const k = (now - m.pop) / 460; if (k >= 1) { m.pop = 0; continue; }
+    o.fillStyle = colOf(moKey(m)); o.globalAlpha = 1 - k * 0.3;
+    moStarPath(o, X(moMid(m)), h - 7, 4.5 + 5 * Math.sin(Math.PI * Math.min(1, k * 1.1)));
+    o.globalAlpha = 1;
+  }
+}
+// which ✦ a tap at this x is on, if any
+function moAt(clientX, rect, xOf, touch) {
+  let best = -1, bd = touch ? 20 : 11;
+  (REC.A.moments || []).forEach((m, i) => { const d = Math.abs(clientX - rect.left - xOf(moMid(m))); if (d < bd) { bd = d; best = i; } });
+  return best;
+}
+/* Go to one: the graph glides there and it plays from a little before, so you hear the phrase arrive and the moment
+ * lands */
+function moGo(i) {
+  const A = REC.A, m = A.moments?.[i]; if (!m) return;
+  const V = REC.V, au = $('rvAudio');
+  MO.go = i; REC.only = null; rvNotesStop();
+  if (V.loop && (m.on < V.loop[0] || m.end > V.loop[1])) rvSetLoop(null);
+  const at = Math.max(0, m.on - 1.5), span = Math.max(V.span, Math.min(m.end - at + 3, 20));
+  au.currentTime = at; MO.last = at;
+  V.follow = true; $('rvFollow').setAttribute('aria-pressed', true);
+  rvCamTo(at - span * 0.2, span);
+  if (au.paused) au.play();
+}
+function moStep(d = 1) {
+  const M = REC.A?.moments; if (!M?.length) return;
+  const ct = rvNow(), n = M.length, cur = M[MO.go];
+  let i;
+  // still on the one just gone to (it starts a little before it): the next is the one after that
+  if (cur && ct >= cur.on - 1.8 && ct <= cur.end + 0.2) i = MO.go + d;
+  else if (d > 0) { i = M.findIndex(m => m.on > ct + 0.05); if (i < 0) i = 0; }
+  else { i = M.length - 1; while (i >= 0 && M[i].on >= ct - 0.05) i--; }
+  moGo(((i % n) + n) % n);
+}
+// the bar's ✦: how many, then which one you've reached. Its words change only when that does
+function moChip(ct) {
+  const b = $('rvMo'), M = REC.A?.moments || [], n = M.length;
+  let k = 0; for (const m of M) if (m.on <= ct) k++;
+  const sig = `${REC.A?.sa}|${n}|${k}`; if (sig === MO.sig) return;
+  const up = MO.sig && k > MO.shown && MO.shown >= 0 && n; MO.sig = sig; MO.shown = k;
+  b.hidden = !n; if (!n) return;
+  b.innerHTML = `${MO_STAR}<span>${k ? `${k} of ${n}` : n}</span>`;
+  const say = `Rāg phrases sung here: ${n}. Go to the next one`;
+  b.title = `${say} (P; Shift-P goes back)`; b.setAttribute('aria-label', say);
+  if (up) { b.classList.remove('pop'); void b.offsetWidth; b.classList.add('pop'); }
+}
+// the top of the Phrases tab: each of the rāg's phrases, how often it's sung here, and where
+function moPanel() {
+  const A = REC.A, box = $('rvMoments'), P = A.moPhrases || [];
+  box.hidden = !P.length; if (!P.length) { box.innerHTML = ''; return; }
+  const list = P.map(ph => ({ ph, at: A.moments.map((m, i) => [m, i]).filter(([m]) => m.phrase === ph) })).sort((a, b) => b.at.length - a.at.length);
+  const row = ({ ph, at }) => {
+    const pi = P.indexOf(ph), sv = ph.notes.map(p => rvSvHTML(p)).join(' ');
+    return `<div class="mo-row"><div class="mo-sv">${sv}</div><div class="mo-kind">${ph.kind}${ph.src ? ' ' + srcMark(ph.src[0].toUpperCase() + ph.src.slice(1)) : ''}</div>
+      <div class="mo-at">${at.length ? `<span class="mo-n">${at.length}×</span>${at.map(([m, i]) => `<a role="button" tabindex="0" data-mo="${i}">${rvFmt(m.on).replace(/\.\d$/, '')}</a>`).join('')}` : '<span class="m">not heard here</span>'}</div>
+      <div class="rpa"><button class="pbtn" data-mop="${pi}" title="This phrase as written, on the keyboard">Notes</button></div></div>`;
+  };
+  box.innerHTML = `<h3>The rāg's phrases</h3>${list.map(row).join('')}`;
+}
+// a phrase as written, on the keyboard (0.4 s a note, as the rāg page plays them)
+function moHear(ph, btn) {
+  const f = Math.round(0.4 / REC.A.hop);
+  rvPlayNotes([{ units: ph.notes.map((semi, i) => ({ type: 'note', conf: 'high', semi, s: i * f, e: (i + 1) * f })) }], { btn });
+}
+function moInit() {
+  $('rvMo').addEventListener('click', () => moStep(1));
+  $('rvAudio').addEventListener('seeking', () => { MO.seek = true; }); // a seek, a loop coming round: not playback running through
+  $('rvMoments').addEventListener('click', e => {
+    const go = e.target.closest('[data-mo]');
+    if (go) { moGo(+go.dataset.mo); $('rvScroll').scrollTo({ top: 0, behavior: rvStill() ? 'auto' : 'smooth' }); return; }
+    const b = e.target.closest('[data-mop]'); if (!b) return;
+    const again = RVN.btn === b; rvNotesStop(); if (!again) moHear(REC.A.moPhrases[+b.dataset.mop], b);
+  });
+  document.addEventListener('keydown', e => {
+    if ($('recv').hidden || e.key.toLowerCase() !== 'p' || e.metaKey || e.ctrlKey || e.altKey || /INPUT|SELECT|TEXTAREA/.test(document.activeElement?.tagName)) return;
+    e.preventDefault(); moStep(e.shiftKey ? -1 : 1);
+  });
+}
+
+/* ---- the moment: it gathers, lands, is named and settles (about 2 s from the last note to rest), all in gold ----
+ * Each note lights as it's sung and stays lit, on the playback's clock (so it's right at Slow too). On the last note a
+ * ring opens, stars lift off and a shimmer runs along it; its name rises above it, svara by
+ * svara; then the line eases back to a quiet glow while it's on screen. Only ever from playback running through it:
+ * not on a seek, a drag, or while paused or singing over it. No burst within 6 s of the last, and in a loop only the
+ * first pass gets one. Reduced motion: the phrase lights and the name appears, nothing moves. */
+const MO_T = { hold: 1200, settle: 800, nameFade: 1500, nameOut: 300, shimmer: 350, ring: 520, noteRing: 280, rest: 0.32, between: 6000, dimIn: 220, dimOut: 380, dimDark: 0.55, dimLight: 0.62 };
+const moDarkPage = () => STAGE.ink.split(',').reduce((t, v) => t + +v, 0) / 3 > 140;
+// the moment is all one gold: bright on a dark or dimmed page, a deeper gold as a light page comes back
+function moGold() {
+  const k = moDarkPage() ? 1 : MO.dim, c = [[143, 100, 0], [255, 209, 102]];
+  return `rgb(${[0, 1, 2].map(i => Math.round(c[0][i] + (c[1][i] - c[0][i]) * k)).join(',')})`;
+}
+const moBack = k => 1 + 2.2 * Math.pow(k - 1, 3) + 1.2 * Math.pow(k - 1, 2); // springs a little past, then settles
+const moClamp = k => Math.max(0, Math.min(1, k));
+function moPath(E, a, b) {
+  const { g, x, y, A, H, V } = E, i0 = Math.max(a, Math.floor(V.t0 / H)), i1 = Math.min(b, Math.ceil((V.t0 + V.span) / H));
+  const ev = Math.max(1, Math.floor((i1 - i0) / 600)); let on = false;
+  g.beginPath();
+  for (let i = i0; i <= i1; i += ev) { const c = A.contour[i]; if (isNaN(c)) { on = false; continue; } if (on) g.lineTo(x(i * H), y(c)); else g.moveTo(x(i * H), y(c)); on = true; }
+}
+// the phrase's line up to frame `to`, each stretch carried on through the glide to the next
+function moLine(E, m, to, alpha) {
+  const { g, colOf } = E;
+  g.save(); g.beginPath(); g.rect(E.l, E.top, E.r - E.l, E.bot - E.top); g.clip();
+  g.lineJoin = g.lineCap = 'round'; g.lineWidth = 3.5; g.shadowBlur = 11; g.globalAlpha = alpha;
+  m.notes.forEach((n, i) => {
+    if (n.s > to) return;
+    const e = Math.min(to, i < m.notes.length - 1 ? m.notes[i + 1].s : n.e);
+    g.strokeStyle = g.shadowColor = colOf(n.semi); moPath(E, n.s, e); g.stroke();
+  });
+  g.restore();
+}
+function moRing(E, n, age, life, r0, r1, w) {
+  const { g, x, y, colOf, H } = E, k = moClamp(age / life);
+  g.strokeStyle = colOf(n.semi); g.globalAlpha = 0.75 * (1 - k); g.lineWidth = w * (1 - k * 0.7);
+  g.beginPath(); g.arc(x(n.s * H), y(rvRef(n.semi)), r0 + (r1 - r0) * moBack(k), 0, 7); g.stroke(); g.globalAlpha = 1;
+}
+const moFull = (m, V, now) => !(V.loop && m.loop === String(V.loop)) && now - MO.burst >= MO_T.between; // a full burst, or only the gather and glint?
+function moLand(c, E, now) {
+  const m = c.m, loop = E.V.loop ? String(E.V.loop) : '';
+  c.landed = now;
+  c.full = moFull(m, E.V, now);
+  if (loop) m.loop = loop;
+  c.name = c.full;
+  if (!c.full) { c.shimmer = rvStill() ? 0 : now; return; }
+  MO.burst = now;
+  if (rvStill()) return;
+  c.shimmer = now; c.ring = now; m.pop = now;
+  const last = m.notes.at(-1), n = 8 + Math.floor(Math.random() * 5), H = E.H;
+  for (let i = 0; i < n; i++) {
+    const src = m.notes[Math.floor(Math.random() * m.notes.length)];
+    MO.stars.push({ t: last.s * H, cy: rvRef(last.semi), dx: (Math.random() - 0.5) * 10, dy: (Math.random() - 0.5) * 10, vx: -46 + Math.random() * 92 - 18, vy: -48 - Math.random() * 92, age: 0, life: 0.7 + Math.random() * 0.5, size: 5 + Math.random() * 5, semi: src.semi, white: Math.random() < 0.28, ph: Math.random() * 6.3 });
+  }
+}
+function moStars(E, dt) {
+  const { g, x, y, colOf, H } = E, S = MO.stars; if (!S.length) return;
+  const dark = moDarkPage() || MO.dim > 0.3;
+  if (dark) g.globalCompositeOperation = 'lighter';
+  for (let i = S.length - 1; i >= 0; i--) {
+    const s = S[i]; s.age += dt; s.dx += s.vx * dt; s.dy += s.vy * dt; s.vy += 26 * dt;
+    if (s.age >= s.life) { S.splice(i, 1); continue; }
+    const k = 1 - s.age / s.life, tw = 0.55 + 0.45 * Math.sin(s.age * 20 + s.ph), z = s.size * (0.6 + 0.6 * tw) * (0.5 + 0.5 * k);
+    g.fillStyle = s.white && dark ? '#fff' : colOf(s.semi); g.globalAlpha = Math.min(1, k * 1.6) * (0.6 + 0.4 * tw);
+    moStarPath(g, x(s.t) + s.dx, y(s.cy) + s.dy, z * 1.6);
+  }
+  g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
+}
+function moShimmer(c, E, now) {
+  const { g, x, H } = E, m = c.m, k = (now - c.shimmer) / MO_T.shimmer; if (k >= 1) { c.shimmer = 0; return; }
+  const a = m.notes[0].s, b = m.notes.at(-1).e, w = Math.max(12, (b - a) * 0.14), at = a + (b - a + w) * (1 - Math.pow(1 - k, 2)) - w / 2;
+  const x0 = x((at - w) * H), x1 = x((at + w) * H); if (x1 <= x0) return;
+  const hot = '255,255,255'; // a glint on the line, its colour showing at the edges, on either page
+  const grad = g.createLinearGradient(x0, 0, x1, 0); grad.addColorStop(0, `rgba(${hot},0)`); grad.addColorStop(0.5, `rgba(${hot},.95)`); grad.addColorStop(1, `rgba(${hot},0)`);
+  g.save(); g.beginPath(); g.rect(E.l, E.top, E.r - E.l, E.bot - E.top); g.clip();
+  g.strokeStyle = grad; g.lineWidth = 2.2; g.lineJoin = g.lineCap = 'round'; moPath(E, Math.max(a, Math.floor(at - w)), Math.min(b, Math.ceil(at + w))); g.stroke();
+  g.restore();
+}
+// its name above it: ✦ Pakad · n D N Ṡ, each part rising in a moment after the last
+function moWashed(g, col) {
+  g.fillStyle = col; const v = g.fillStyle, k = 1 - MO.dimA; // the canvas hands the colour back as #rrggbb
+  return v[0] === '#' ? `rgb(${[1, 3, 5].map(i => Math.round(parseInt(v.slice(i, i + 2), 16) * k)).join(',')})` : col;
+}
+function moName(c, E, now) {
+  const { g, x, y, colOf, CARD, H } = E, m = c.m, still = rvStill(), age = now - c.landed;
+  const font = '600 12.5px Inter, sans-serif';
+  const halo = moWashed(g, CARD); // the outline that keeps it clear of the line, in the colour of the dimmed graph behind it
+  if (!c.lay) {
+    g.font = font; const items = [{ star: 1, w: 12 }, { t: m.phrase.kind, w: g.measureText(m.phrase.kind).width }, { t: '·', w: g.measureText('·').width }, ...m.phrase.notes.map(k => ({ k, w: 11 }))];
+    c.lay = { items, w: items.reduce((t, it) => t + it.w + 6, -6) };
+  }
+  const { items, w } = c.lay, top = Math.min(...m.notes.map(n => y(rvRef(n.semi))));
+  const mid = Math.max(E.l + w / 2 + 2, Math.min(E.r - w / 2 - 2, (x(m.on) + x(m.end)) / 2)), ly = Math.max(E.top + 14, top - 46);
+  const out = moClamp((age - MO_T.nameFade) / MO_T.nameOut);
+  let cx = mid - w / 2;
+  g.save(); g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = font; g.lineJoin = 'round';
+  items.forEach((it, i) => {
+    const k = still ? 1 : moClamp((age - i * 40) / 260), e = still ? 1 : moBack(k), px = cx + it.w / 2;
+    cx += it.w + 6; if (k <= 0) return;
+    g.save(); g.translate(px, ly + (1 - e) * 9); g.scale(0.65 + 0.35 * e, 0.65 + 0.35 * e); g.globalAlpha = moClamp(k * 2) * (1 - out);
+    if (it.star) { g.fillStyle = colOf(moKey(m)); moStarPath(g, 0, 0, 6); }
+    else if (it.t) { g.lineWidth = 4; g.strokeStyle = halo; g.strokeText(it.t, 0, 0); g.fillStyle = colOf(0); g.fillText(it.t, 0, 0); }
+    else {
+      const s = rvSv(it.k), o = Math.floor(it.k / 12), col = colOf(it.k);
+      g.lineWidth = 4; g.strokeStyle = halo; g.strokeText(ROM[s], 0, 0); g.fillStyle = col; g.fillText(ROM[s], 0, 0);
+      if (KOMAL.has(s)) g.fillRect(-4.5, 7.5, 9, 1.5);
+      if (s === 'M') g.fillRect(-0.75, -12, 1.5, 4.5);
+      for (let d = 0; d < Math.abs(o); d++) { g.beginPath(); g.arc((d - (Math.abs(o) - 1) / 2) * 5, o > 0 ? -10 : 10, 1.5, 0, 7); g.fill(); }
+    }
+    g.restore();
+  });
+  g.restore();
+}
+// the page dims while a full moment gathers and lands, so the phrase is the brightest thing on it: the graph is washed
+// here, under the phrase, and everything else by #moDim, a sheet with the graph cut out of it. The same black at the same
+// strength on both, so there's no seam. Drawn before moFrame, on the whole canvas.
+function moDim(g, W, Hh, A, V) {
+  const el = $('moDim');
+  if (!A.moments?.length) MO.dim = 0;
+  else {
+    const now = performance.now(), dt = Math.min(50, MO.dimAt ? now - MO.dimAt : 16), c = MO.cur; MO.dimAt = now;
+    const want = c && !rvStill() && (c.landed ? c.full && now - c.landed < MO_T.hold : moFull(c.m, V, now)) ? 1 : 0;
+    MO.dim += (want - MO.dim) * (1 - Math.exp(-dt / (want ? MO_T.dimIn : MO_T.dimOut)));
+    if (!want && MO.dim < 0.004) MO.dim = 0;
+  }
+  if (!MO.dim) { MO.dimA = 0; if (el.style.opacity !== '0') el.style.opacity = '0'; return; }
+  const dark = moDarkPage(), a = (dark ? MO_T.dimDark : MO_T.dimLight) * MO.dim; MO.dimA = a;
+  g.fillStyle = `rgba(0,0,0,${a})`; g.fillRect(0, 0, W, Hh);
+  const r = g.canvas.getBoundingClientRect(), vw = innerWidth, vh = innerHeight, R = 16;
+  const hole = `M0 0H${vw}V${vh}H0Z M${r.left + R} ${r.top}H${r.right - R}A${R} ${R} 0 0 1 ${r.right} ${r.top + R}V${r.bottom}H${r.left}V${r.top + R}A${R} ${R} 0 0 1 ${r.left + R} ${r.top}Z`;
+  if (hole !== MO.hole) { MO.hole = hole; el.style.clipPath = `path(evenodd, "${hole}")`; }
+  el.style.opacity = a.toFixed(3);
+}
+function moFrame(E) {
+  const { A, H, V, au, ct } = E, M = A.moments; if (!M?.length) return;
+  const gold = moGold(); E.colOf = () => gold; // every part of the moment draws through this
+  const now = performance.now(), dt = Math.min(0.05, MO.at ? (now - MO.at) / 1000 : 0.016); MO.at = now;
+  // a stalled frame (a slow device, the tab coming back) isn't a seek: only a real one, or a big jump, breaks it
+  const d = ct - MO.last, live = !au.paused && !RVN.at && !SING.on, smooth = live && !MO.seek && d > -0.08 && d < 2.5;
+  MO.seek = false;
+  if (!smooth && MO.cur && !MO.cur.landed) MO.cur = null;
+  if (smooth) for (const m of M) if (MO.last < m.on && ct >= m.on) {
+    if (MO.cur) MO.cur.m.seen = true;
+    MO.cur = { m, lit: m.notes.map(() => 0), landed: 0, full: false, name: false, to: m.notes[0].s, shimmer: 0, ring: 0, lay: null };
+    break;
+  }
+  MO.last = ct;
+  const t1 = V.t0 + V.span, c = MO.cur;
+  for (const m of M) {
+    if (m.seen && (m.end < V.t0 || m.on > t1)) m.seen = false;
+    else if (m.seen && m !== c?.m) moLine(E, m, m.notes.at(-1).e, MO_T.rest * (1 - MO.dim * 0.6));
+  }
+  if (c) {
+    const m = c.m, still = rvStill();
+    if (smooth) c.to = Math.max(c.to, Math.min(ct / H, m.notes.at(-1).e)); else if (c.landed) c.to = m.notes.at(-1).e;
+    m.notes.forEach((n, i) => { if (!c.lit[i] && ct >= n.s * H) c.lit[i] = now; });
+    if (!c.landed && ct >= m.land) moLand(c, E, now);
+    const settle = c.landed ? moClamp((now - c.landed - MO_T.hold) / MO_T.settle) : 0, eased = 1 - Math.pow(1 - settle, 3);
+    moLine(E, m, c.to, 1 - eased * (1 - MO_T.rest));
+    if (!still) m.notes.forEach((n, i) => { const age = now - c.lit[i]; if (c.lit[i] && age < MO_T.noteRing && i < m.notes.length - 1) moRing(E, n, age, MO_T.noteRing, 3, 12, 1.5); });
+    if (c.ring) { const age = now - c.ring; if (age < MO_T.ring) moRing(E, m.notes.at(-1), age, MO_T.ring, 4, 26, 2.4); else c.ring = 0; }
+    if (c.shimmer) moShimmer(c, E, now);
+    if (settle >= 1) { m.seen = true; MO.cur = null; }
+  }
+  moStars(E, dt);
+  if (c?.name && c.landed && now - c.landed < MO_T.nameFade + MO_T.nameOut) moName(c, E, now);
+  // it finishes even if you've paused: the page won't otherwise draw again
+  if ((MO.cur || MO.stars.length || MO.dim) && au.paused && !MO.raf) MO.raf = requestAnimationFrame(() => { MO.raf = 0; rvDraw(); });
 }
 /* ------------------------------------------------------------------ *
  *  Lines from your notes, on the recording's graph
