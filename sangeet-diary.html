@@ -43,6 +43,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@500;600;700&family=Noto+Sans+Gujarati:wght@400;500;600&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
+    /* the page's layers, bottom to top: every layer that floats over the page takes one of these, so the order is
+       decided here and not by numbers scattered through the file (small local ones, -1 to 6, stay where they are).
+       Open dropdown lists sit in the browser's top layer, above all of these; --z-menu is only the fallback */
+    --z-nav: 40; --z-mini: 50; --z-menu: 60; --z-sheet: 80; --z-nav-section: 90; --z-perform: 95; --z-recv: 96;
+    --z-card: 400; --z-toast: 900; --z-tip: 1000; --z-wait: 9999;
     --paper: #FFFFFF;
     --ink: #262523;
     --ink-2: #5C5C5C;
@@ -94,7 +99,7 @@
   ::view-transition-group(nav) { animation: none; }
   /* ---------- Nav ---------- */
   .nav {
-    position: sticky; top: 0; z-index: 40; background: rgba(255, 255, 255, 0.86);
+    position: sticky; top: 0; z-index: var(--z-nav); background: rgba(255, 255, 255, 0.86);
     -webkit-backdrop-filter: saturate(180%) blur(14px); backdrop-filter: saturate(180%) blur(14px);
     border-bottom: 1px solid transparent; transition: border-color .2s;
   }
@@ -278,7 +283,7 @@
     .perform, .recv { color-scheme: dark; --st-bg: #121110; --st-card: #1B1A18; --st-ink: #F3EEE4; --st-ink-rgb: 243 238 228; --st-accent: #FFB470; --st-gold: #FFD166; --st-me: #FF6FA0; --st-tip: rgba(10, 10, 9, 0.94); --st-orn: #B9BDFF;
       --sv-S: #FF7D38; --sv-R: #FFB547; --sv-G: #E3D95A; --sv-M: #6FD49A; --sv-P: #4CC9DD; --sv-D: #8C93FF; --sv-N: #D484F2; }
   }
-  .perform { position: fixed; inset: 0; z-index: 95; background: var(--st-bg); color: var(--st-ink); display: flex; flex-direction: column; }
+  .perform { position: fixed; inset: 0; z-index: var(--z-perform); background: var(--st-bg); color: var(--st-ink); display: flex; flex-direction: column; }
   .perform .pbar, .perform .pnav { flex: none; display: flex; align-items: center; gap: 8px; padding: 10px 14px; padding-top: max(10px, env(safe-area-inset-top)); }
   /* the bottom row: Back / Next in the middle, and at the right the buttons that only change how the lines look */
   .perform .pnav { padding-bottom: max(12px, env(safe-area-inset-bottom)); display: grid; grid-template-columns: 1fr auto 1fr; }
@@ -477,7 +482,7 @@
   .done-btn.on { color: var(--ok); border-color: var(--ok); }
 
   /* ---------- Bandish library ---------- */
-  .sheet { position: fixed; inset: 0; z-index: 80; background: rgba(21, 20, 19, 0.32); display: flex; align-items: flex-start; justify-content: center; padding: 72px 16px 16px; }
+  .sheet { position: fixed; inset: 0; z-index: var(--z-sheet); background: rgba(21, 20, 19, 0.32); display: flex; align-items: flex-start; justify-content: center; padding: 72px 16px 16px; }
   .sheet-card { width: 100%; max-width: 680px; max-height: calc(100vh - 96px); display: flex; flex-direction: column; background: #fff; border-radius: 22px; border: 1px solid var(--line); box-shadow: 0 30px 70px rgba(21, 20, 19, 0.25); overflow: hidden; }
   .sheet-top, .chips { flex: none; }
   .sheet-top { display: flex; gap: 10px; align-items: center; padding: 14px 14px 10px; }
@@ -520,12 +525,13 @@
   .lempty { padding: 24px 12px; margin: 0; font-size: 14px; color: var(--ink-2); }
   [hidden] { display: none !important; }
   .menu.library .pop { min-width: 320px; }
+  /* the open list: in the top layer, placed by Menu() in screen coordinates (left, and top or bottom) */
   .menu .pop {
-    position: absolute; right: 0; top: calc(100% + 8px); z-index: 60; min-width: 220px; max-height: 340px; overflow: auto;
-    padding: 6px; border-radius: 18px; background: #fff; border: 1px solid var(--line);
-    box-shadow: 0 24px 50px rgba(21, 20, 19, 0.16); transform-origin: top right; display: none;
+    position: fixed; inset: auto; margin: 0; z-index: var(--z-menu); min-width: 220px; max-height: 340px; overflow: auto;
+    padding: 6px; border-radius: 18px; background: #fff; color: inherit; border: 1px solid var(--line);
+    box-shadow: 0 24px 50px rgba(21, 20, 19, 0.16); transform-origin: top right; display: none; overscroll-behavior: contain;
   }
-  .menu .pop.up { top: auto; bottom: calc(100% + 8px); transform-origin: bottom right; }
+  .menu .pop.up { transform-origin: bottom right; }
   .menu .item { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; padding: 9px 12px 9px 10px; border-radius: 12px; font-size: 14px; color: var(--ink); white-space: nowrap; }
   .menu .item .chk { width: 14px; color: var(--ember); font-size: 12px; visibility: hidden; }
   .menu .item.sel .chk { visibility: visible; }
@@ -739,7 +745,7 @@
 
   /* ---------- Mini player ---------- */
   .mini {
-    position: fixed; left: 50%; bottom: 18px; z-index: 50; transform: translate(-50%, 140%);
+    position: fixed; left: 50%; bottom: 18px; z-index: var(--z-mini); transform: translate(-50%, 140%);
     width: auto; max-width: calc(100% - 24px); display: flex; align-items: center; gap: 14px;
     padding: 8px 18px 8px 8px; border-radius: 999px; background: var(--night); color: var(--cream);
     box-shadow: 0 20px 50px rgba(21, 20, 19, 0.35), inset 0 0 0 1px var(--hair);
@@ -866,9 +872,9 @@
   .rempty { color: var(--ink-2); max-width: 640px; margin: 0; }
 
   /* Recordings: the full-screen pitch graph */
-  .recv { position: fixed; inset: 0; z-index: 96; background: var(--st-bg); color: var(--st-ink); display: flex; flex-direction: column; }
+  .recv { position: fixed; inset: 0; z-index: var(--z-recv); background: var(--st-bg); color: var(--st-ink); display: flex; flex-direction: column; }
   .recv[hidden] { display: none; }
-  .mo-dim { position: fixed; inset: 0; z-index: 40; background: #000; opacity: 0; pointer-events: none; will-change: opacity; }
+  .mo-dim { position: fixed; inset: 0; z-index: var(--z-nav); background: #000; opacity: 0; pointer-events: none; will-change: opacity; }
   .rv-top { display: flex; align-items: center; gap: 12px; padding: 10px 16px 0; padding-top: max(10px, env(safe-area-inset-top)); }
   .rv-h { min-width: 0; }
   .rv-title { font-family: var(--display); font-size: 19px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -1168,12 +1174,12 @@
     font: italic 600 10px/1 Georgia, 'Times New Roman', serif; vertical-align: 0.1em; cursor: help; transition: color .15s, border-color .15s, background-color .15s; }
   .src-i::after { content: ''; position: absolute; inset: -9px; } /* a finger-sized target */
   .src-i:hover, .src-i:focus-visible { color: var(--ink); border-color: var(--ink-2); background: var(--wash); outline: none; }
-  #srcTip { position: fixed; z-index: 1000; max-width: min(280px, calc(100vw - 16px)); padding: 7px 11px; border-radius: 10px;
+  #srcTip { position: fixed; z-index: var(--z-tip); max-width: min(280px, calc(100vw - 16px)); padding: 7px 11px; border-radius: 10px;
     background: var(--ink); color: #fff; font-size: 12.5px; line-height: 1.4; box-shadow: 0 6px 20px rgba(0, 0, 0, .18);
     pointer-events: none; opacity: 0; transform: translateY(3px); transition: opacity .15s, transform .15s; }
   #srcTip.on { opacity: 1; transform: none; }
   /* a recording finished while you were elsewhere: a quiet note at the top with Open */
-  #recReady { position: fixed; z-index: 900; top: calc(12px + env(safe-area-inset-top)); left: 50%; transform: translateX(-50%);
+  #recReady { position: fixed; z-index: var(--z-toast); top: calc(12px + env(safe-area-inset-top)); left: 50%; transform: translateX(-50%);
     display: flex; align-items: center; gap: 4px; max-width: calc(100vw - 32px); padding: 5px 5px 5px 16px; border-radius: 999px;
     background: var(--ink); color: #fff; font-size: 14px; box-shadow: 0 6px 20px rgba(0, 0, 0, .18); animation: rrIn .25s ease-out; }
   #recReady[hidden] { display: none; }
@@ -1336,7 +1342,7 @@
   .rs-sync-a .linkbtn { font-size: 13px; color: var(--ink-2); font-weight: 500; }
   /* the Recordings page: full screen, the content in a column */
   .rlib { padding: 0; background: var(--wash); align-items: stretch; top: var(--navh, 0px); }
-  body.rl-page .nav { z-index: 90; border-bottom-color: var(--line); } /* Recordings is a section: the nav stays over it */
+  body.rl-page .nav { z-index: var(--z-nav-section); border-bottom-color: var(--line); } /* Recordings is a section: the nav stays over it */
   .rl-what { background: var(--paper); box-shadow: 0 0 0 1px var(--line); }
   .rl-wh { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
   .rl-wh b { font-size: 15px; }
@@ -1459,7 +1465,7 @@
   .rg-b:hover { transform: translateY(-1px); background: color-mix(in srgb, var(--ember) 10%, var(--wash)); }
   .rg-i.on { box-shadow: inset 0 0 0 1.5px var(--ember); }
   /* why a rāg scored as it did: one floating card beside the hovered score */
-  .rg-card { position: fixed; z-index: 400; padding: 12px 14px; border-radius: 14px; background: var(--paper); color: var(--ink-2);
+  .rg-card { position: fixed; z-index: var(--z-card); padding: 12px 14px; border-radius: 14px; background: var(--paper); color: var(--ink-2);
     box-shadow: 0 10px 34px rgba(0, 0, 0, .18), 0 0 0 1px rgba(0, 0, 0, .06); font-size: 13px; line-height: 1.45; pointer-events: none;
     opacity: 0; transform: translateY(-4px) scale(.98); transform-origin: top left; transition: opacity .14s, transform .2s var(--spring-ease); }
   .rg-card.on { opacity: 1; transform: none; }
@@ -1626,7 +1632,7 @@
   }
 
 /* the database waiting on an older copy of the app (087) */
-.db-wait { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); z-index: 9999; width: min(560px, calc(100vw - 32px)); padding: 14px 18px; border-radius: 14px; background: var(--ink); color: var(--paper); font: 500 15px/1.45 var(--sans); box-shadow: 0 10px 30px rgba(0,0,0,.25); }
+.db-wait { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); z-index: var(--z-wait); width: min(560px, calc(100vw - 32px)); padding: 14px 18px; border-radius: 14px; background: var(--ink); color: var(--paper); font: 500 15px/1.45 var(--sans); box-shadow: 0 10px 30px rgba(0,0,0,.25); }
 .db-wait b { color: var(--paper); }
 
 /* Progress (08938): Home's gist, and the page — the stage's colours, plain rows, numbers in tabular figures */
@@ -1848,7 +1854,7 @@
         <button class="dh"><span class="t">How to read the notation</span><span class="chev"><svg class="sym" viewBox="0 0 24 24"><path d="M12 4.5a1.2 1.2 0 0 1 1.2 1.2v5.1h5.1a1.2 1.2 0 1 1 0 2.4h-5.1v5.1a1.2 1.2 0 1 1-2.4 0v-5.1H5.7a1.2 1.2 0 1 1 0-2.4h5.1V5.7A1.2 1.2 0 0 1 12 4.5z"/></svg></span></button>
         <div class="dc"><div class="inner">
           <div class="legend" id="legend"></div>
-          <div class="note">Playback is a synthesized guide, not a recording: a melody instrument or voice, with the tabla thekā for pieces in a tāl.</div>
+          <div class="note">Playback is a guide the app plays, not your teacher: the melody on a grand piano (recorded notes from the <a href="https://archive.org/details/SalamanderGrandPianoV3" target="_blank" rel="noopener">Salamander Grand Piano</a> by Alexander Holm, CC BY 3.0) or a made instrument or voice, with the tabla thekā for pieces in a tāl.</div>
         </div></div>
       </section>
     </div>
@@ -2154,7 +2160,7 @@ const ROLE = { '×': 'sam', '0': 'khāli', '2': 'tāli', '3': 'tāli', '4': 'tā
  *  struck/decay: every note is a fresh hammer strike that rings away (s); held notes fade like a piano
  * ------------------------------------------------------------------ */
 const INSTRUMENTS = {
-  piano:     { name: 'Piano', struck: true, decay: 1.6, run: true, glide: 0, meendFrac: 0.6, meendMax: 0.45, vib: 0, vibRate: 5, vibDelay: 0, attack: 0.08, dip: 1, level: 0.62, wet: 0.2 },
+  piano:     { name: 'Piano', struck: true, sampled: true, decay: 1.6, run: true, glide: 0, meendFrac: 0.6, meendMax: 0.45, vib: 0, vibRate: 5, vibDelay: 0, attack: 0.08, dip: 1, level: 0.62, wet: 0.2 },
   harmonium: { name: 'Harmonium', run: true, glide: 0, meendFrac: 0.6, meendMax: 0.45, vib: 0, vibRate: 5, vibDelay: 0, attack: 0.035, dip: 0.5, level: 0.36, wet: 0.12 },
   sarangi:   { name: 'Sārangi',   glide: 0.07, meendFrac: 0.78, meendMax: 0.75, vib: 13, vibRate: 4.6, vibDelay: 0.28, attack: 0.08, dip: 0.5, level: 0.5, wet: 0.28 },
   voice:     { name: 'Voice', voice: true, glide: 0.06, meendFrac: 0.72, meendMax: 0.65, vib: 22, vibRate: 5.4, vibDelay: 0.3, attack: 0.06, dip: 0.85, level: 0.55, wet: 0.25 },
@@ -2978,6 +2984,7 @@ function buildVoice(kind, out, noise) {
 function newSession() {
   if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
   const inst = INSTRUMENTS[instrument];
+  if (inst.sampled) pianoLoad(); // usually long since loaded; if not, the synthesized piano plays till it is
   const master = gain(0.9);
   const comp = ctx.createDynamicsCompressor();
   master.connect(comp).connect(ctx.destination);
@@ -3027,6 +3034,13 @@ function noteOn(s, t, f, { legato = false, glide = 0.02, level = 1, curve = 'exp
     if (andolan) s.andol.gain.setTargetAtTime(32, t + 0.18, 0.3);
     else s.andol.gain.setTargetAtTime(0, t, 0.04);
   }
+  if (inst.struck && inst.sampled && pianoReady()) {
+    // the recorded grand: the key before lets go (as a legato hand does) and this one is struck
+    s.pn?.damp(t, 0.12);
+    s.pn = pianoStrike(t, f, L * PIANO_GAIN, s.mel);
+    s.lastF = f; s.sounding = true;
+    return;
+  }
   if (inst.struck) {
     // re-strike: drop whatever decay was still scheduled, hit, then ring away (fast bloom, slow tail)
     P.setValueAtTime(f, t);
@@ -3069,6 +3083,7 @@ function noteOn(s, t, f, { legato = false, glide = 0.02, level = 1, curve = 'exp
 }
 function noteOff(s, t) {
   if (!s.sounding) return;
+  if (s.pn) { s.pn.damp(t, s.inst.attack); s.pn = null; }
   s.vgain.gain.setTargetAtTime(0, t, s.inst.attack);
   s.sounding = false;
 }
@@ -3145,6 +3160,66 @@ function meend(s, t, to, dur, level) {
 }
 
 
+/* ------------------------------------------------------------------ *
+ *  The grand piano: recorded notes of a real concert grand
+ * ------------------------------------------------------------------ */
+/* Salamander Grand Piano V3 by Alexander Holm (a Yamaha C5), CC BY 3.0, one note every three semitones from A1 to
+ * C6, in piano.json beside the page (made by tools/make-piano.sh; the service worker keeps it for offline). A note
+ * plays the nearest recording, retuned to its exact pitch (at most a semitone and a half). It's fetched and decoded
+ * once the page has loaded, so the first note is already the real one; until then, or where the file can't be had
+ * (the page opened straight from disk), the synthesized piano plays instead. */
+const PIANO = { notes: null, data: null, loading: null, failed: false };
+const PIANO_GAIN = 1.85; // the recordings (peaks at -3 dB) as loud as the synthesized piano they replace (measured)
+
+function pianoLoad() {
+  if (PIANO.notes || PIANO.failed || PIANO.loading || typeof fetch !== 'function') return PIANO.loading;
+  PIANO.loading = (async () => {
+    try {
+      PIANO.data ??= await fetch('piano.json').then(r => (r.ok ? r.json() : Promise.reject(new Error(r.status))));
+    } catch { PIANO.failed = true; return; }
+    // decoded off the speakers if it can be (an AudioBuffer plays in any context), else in the app's own
+    const Off = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+    const c = ctx || (Off && new Off(1, 1, 48000));
+    if (!c) return;
+    const bytes = b64 => Uint8Array.from(atob(b64), ch => ch.charCodeAt(0)).buffer;
+    try {
+      PIANO.notes = await Promise.all(PIANO.data.notes.map(n =>
+        new Promise((ok, no) => c.decodeAudioData(bytes(n.ogg), ok, no)).then(buf => ({ m: n.m, buf }))));
+      PIANO.data = null;
+    } catch {
+      if (c === ctx) PIANO.failed = true; // else: the offline decoder couldn't; the next call tries the app's own
+    }
+  })().finally(() => { PIANO.loading = null; });
+  return PIANO.loading;
+}
+const pianoReady = () => !!PIANO.notes;
+
+// strike a key at time t: the nearest recording, retuned, at `level`, into `out`. damp(at, tau) lets go of it
+function pianoStrike(t, hz, level, out) {
+  const m = 69 + 12 * Math.log2(hz / 440);
+  let near = PIANO.notes[0];
+  for (const n of PIANO.notes) if (Math.abs(n.m - m) < Math.abs(near.m - m)) near = n;
+  const src = ctx.createBufferSource(), g = ctx.createGain();
+  src.buffer = near.buf;
+  src.playbackRate.value = Math.pow(2, (m - near.m) / 12);
+  g.gain.value = level;
+  src.connect(g).connect(out);
+  src.start(t);
+  let done = false;
+  return {
+    src,
+    damp(at, tau = 0.1) {
+      if (done) return;
+      done = true;
+      g.gain.setTargetAtTime(0, Math.max(at, t), tau);
+      try { src.stop(Math.max(at, t) + tau * 6); } catch {}
+    },
+  };
+}
+
+if (typeof window !== 'undefined' && typeof document !== 'undefined' && document.addEventListener) {
+  window.addEventListener('load', () => setTimeout(pianoLoad, 800));
+}
 /* ------------------------------------------------------------------ *
  *  Sung sargam from recorded syllables
  *  Each syllable (सा रे गा मा पा धा नी) was spoken once by a macOS voice (Lekha: Hindi;
@@ -3810,10 +3885,17 @@ function Press(el, c = 0.045) {
   ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => el.addEventListener(ev, () => ps.set(0)));
 }
 
-/* Menu-style picker whose popover springs open from the trigger (SpringSelect). */
+/* Menu-style picker whose popover springs open from the trigger (SpringSelect).
+ * The open list is shown in the browser's top layer (a manual popover), placed by the trigger in screen coordinates,
+ * so no card, bar, sheet or overflow it sits in can cover or clip it. It opens down or up, wherever there's more room,
+ * and is never taller than that room. One list is open at a time; a tap elsewhere, a scroll, a resize or Escape
+ * closes it (pointerdown, which the iPad sends for a tap anywhere; mousedown it doesn't, on plain space). */
+let MENU_OPEN = null; // the open menu's close, so opening another closes it
+const MENU_TOP_LAYER = typeof HTMLElement === 'function' && 'showPopover' in HTMLElement.prototype;
 function Menu(root, options, value, onChange) {
   root.innerHTML = `<button type="button" class="trigger" aria-haspopup="listbox" aria-expanded="false"><span class="val"></span><span class="chev">${ICON.updown}</span></button><div class="pop" role="listbox"></div>`;
   const trig = root.querySelector('.trigger'), pop = root.querySelector('.pop');
+  if (MENU_TOP_LAYER) pop.popover = 'manual';
   let opts = options, cur = value, open = false, act = -1;
   const ps = springValue(0, SPRING.responsive, p => {
     pop.style.opacity = Math.min(1, Math.max(0, p * 1.6));
@@ -3824,23 +3906,59 @@ function Menu(root, options, value, onChange) {
       `<button type="button" role="option" class="item${o.value === cur ? ' sel' : ''}${i === act ? ' act' : ''}" data-i="${i}" aria-selected="${o.value === cur}"><span class="chk">${ICON.check}</span>${o.label}</button>`).join('');
     trig.querySelector('.val').textContent = opts.find(o => o.value === cur)?.label ?? '';
   };
+  // by the trigger, its right edge on the trigger's (kept 8px inside the screen), below it or above
+  const place = () => {
+    const r = trig.getBoundingClientRect(), gap = 8, edge = 8, vh = window.innerHeight, vw = window.innerWidth;
+    pop.style.maxHeight = 'none';
+    const want = Math.min(340, pop.scrollHeight);
+    const below = vh - r.bottom - gap - edge, above = r.top - gap - edge;
+    const up = below < want && above > below;
+    pop.classList.toggle('up', up);
+    pop.style.maxHeight = `${Math.max(120, Math.min(340, up ? above : below))}px`;
+    const w = pop.offsetWidth;
+    pop.style.left = `${Math.max(edge, Math.min(vw - w - edge, r.right - w))}px`;
+    pop.style.top = up ? 'auto' : `${r.bottom + gap}px`;
+    pop.style.bottom = up ? `${vh - r.top + gap}px` : 'auto';
+  };
+  const outside = e => { if (!root.contains(e.target) && !pop.contains(e.target)) setOpen(false); };
+  // a scroll that moves the trigger closes it (not the list's own scroll, nor a settle of a pixel or two)
+  let at = null;
+  const scrolled = e => {
+    if (e.target === pop || pop.contains(e.target)) return;
+    const r = trig.getBoundingClientRect();
+    if (!at || Math.abs(r.top - at.top) > 4 || Math.abs(r.left - at.left) > 4) setOpen(false);
+  };
+  const shut = () => setOpen(false);
   const setOpen = v => {
     if (v === open) return;
     open = v;
     trig.setAttribute('aria-expanded', v);
     if (v) {
+      MENU_OPEN?.(); MENU_OPEN = shut;
       act = opts.findIndex(o => o.value === cur);
       renderItems();
       pop.style.display = 'block';
-      const r = root.getBoundingClientRect();
-      const below = window.innerHeight - r.bottom;
-      pop.classList.toggle('up', below < Math.min(340, pop.scrollHeight + 20) && r.top > below);
+      if (MENU_TOP_LAYER && !pop.matches(':popover-open')) pop.showPopover();
+      place();
+      at = trig.getBoundingClientRect();
       ps.setConfig(SPRING.responsive);
       ps.set(1);
-      pop.querySelector('.sel')?.scrollIntoView({ block: 'nearest' });
+      const sel = pop.querySelector('.sel'); // the chosen one in view, without scrolling the page
+      if (sel) pop.scrollTop = Math.max(0, sel.offsetTop - (pop.clientHeight - sel.offsetHeight) / 2);
+      document.addEventListener('pointerdown', outside, true);
+      document.addEventListener('scroll', scrolled, true);
+      window.addEventListener('resize', shut);
     } else {
+      if (MENU_OPEN === shut) MENU_OPEN = null;
+      document.removeEventListener('pointerdown', outside, true);
+      document.removeEventListener('scroll', scrolled, true);
+      window.removeEventListener('resize', shut);
       ps.setConfig(SPRING.snappy);
-      ps.set(0, true, () => { if (!open) pop.style.display = 'none'; });
+      ps.set(0, true, () => {
+        if (open) return;
+        pop.style.display = 'none';
+        if (MENU_TOP_LAYER && pop.matches(':popover-open')) pop.hidePopover();
+      });
     }
   };
   const choose = i => {
@@ -3855,7 +3973,6 @@ function Menu(root, options, value, onChange) {
   };
   trig.addEventListener('click', () => setOpen(!open));
   pop.addEventListener('click', e => { const b = e.target.closest('.item'); if (b) choose(+b.dataset.i); });
-  document.addEventListener('mousedown', e => { if (open && !root.contains(e.target)) setOpen(false); });
   root.addEventListener('keydown', e => {
     if (!open) {
       if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); setOpen(true); }
@@ -6840,10 +6957,18 @@ function rvNotesBox(btn) {
   return box;
 }
 function rvNotes(p, btn = null) { rvPlayNotes([p], { btn }); }
+const RV_PIANO_GAIN = 0.75; // the recorded grand against the synthesized note below
 // a struck piano note: slightly stretched partials (as the player's piano), a quick hammer and a ring that fades;
 // a long note fades as a piano's does, and lets go when the sung note ends
 function rvPianoNote(n, into, nodes = RVN.nodes) {
-  const g = ctx.createGain(), len = Math.max(0.12, n.b - n.a);
+  const len = Math.max(0.12, n.b - n.a);
+  if (pianoReady()) { // the recorded grand: struck, and let go when the sung note ends
+    const k = pianoStrike(n.a, n.hz, RV_PIANO_GAIN, into);
+    k.damp(n.a + len, 0.08); nodes.push(k.src);
+    return;
+  }
+  pianoLoad();
+  const g = ctx.createGain();
   g.gain.setValueAtTime(0, n.a); g.gain.linearRampToValueAtTime(1, n.a + 0.006);
   g.gain.setTargetAtTime(0.35, n.a + 0.006, 0.35); g.gain.setTargetAtTime(0, n.a + len, 0.08);
   g.connect(into);
@@ -7140,12 +7265,27 @@ const chVol = () => ({ soft: 0.1, medium: 0.17, loud: 0.26 })[PREFS.chVol || 'me
 // there they're played an octave up, where a harmonium's right hand would hold them
 // the sound: Strings (default: three sawtooths a little apart with a slow vibrato, through a soft low-pass, swelling
 // in and letting go slowly, like a string section's pad), Soft pad (a triangle with a whisper of its octave), or
-// Reed (the harmonium-like sound Notes plays). A slow swell starts that much earlier (pre) so it lands on the note.
+// Reed (the harmonium-like sound Notes plays), or Grand piano (the recorded grand, 061-piano.js: each chord struck,
+// ringing until the next; the soft pad's waves stand in until its notes have loaded). A slow swell starts that much
+// earlier (pre) so it lands on the note.
 const CH_SOUNDS = {
   strings: { osc: [['sawtooth', -9, 0.3], ['sawtooth', 0, 0.3], ['sawtooth', 9, 0.3]], vib: 5, lp: 1500, q: 0.7, att: 0.22, rel: 0.45, pre: 0.1, gain: 1 },
   pad: { osc: [['triangle', -3, 0.75], ['sine', 1203, 0.2]], vib: 0, lp: 2400, q: 0.5, att: 0.12, rel: 0.35, pre: 0.05, gain: 1.7 },
   reed: { osc: [['sawtooth', -4, 0.6], ['square', 5, 0.3]], vib: 0, lp: 3000, q: 0.5, att: 0.06, rel: 0.12, pre: 0, gain: 1 },
+  piano: { piano: true, osc: [['triangle', -3, 0.75], ['sine', 1203, 0.2]], vib: 0, lp: 9000, q: 0.5, att: 0.12, rel: 0.35, pre: 0, gain: 1 },
 };
+const CH_PIANO_GAIN = 3; // each recorded note of a chord (the bass a little under, its lvl): over a second it sits
+// about 5 dB under the soft pad's held tone, as its strike carries it (measured)
+// strike a chord's notes on the recorded grand, from a and let go at b; false if its notes aren't loaded yet
+function chPianoChord(c, a, b, into, live) {
+  if (!pianoReady()) { pianoLoad(); return false; }
+  for (const [k, lvl] of [[c.bass, 0.7], ...c.keys.map(k => [k, 1])]) {
+    const p = pianoStrike(a, REC.A.sa * Math.pow(2, rvRef(k + chOct()) / 1200), lvl * CH_PIANO_GAIN, into);
+    p.damp(b, 0.25);
+    live?.push({ o: [p.src], end: b + 1.6 });
+  }
+  return true;
+}
 const chSound = () => CH_SOUNDS[PREFS.chSound] || CH_SOUNDS.strings;
 const chOct = () => (REC.A?.sa || 200) < 170 ? 12 : 0;
 // the chords for the recording open now, worked out again when it, its Sa or the style changes
@@ -7301,6 +7441,7 @@ function chTick() {
 }
 function chChord(c, a, b) {
   const sa = REC.A.sa, up = chOct(), S = CH.snd;
+  if (S.piano && chPianoChord(c, a, b, CH.lp, CH.live)) return;
   let lfo = null;
   if (S.vib) { // one slow vibrato for the whole chord, as a section bows together
     lfo = ctx.createOscillator(); lfo.frequency.value = 5.2; const d = ctx.createGain(); d.gain.value = S.vib; lfo.connect(d);
@@ -7407,6 +7548,7 @@ function chHear(key) {
   if (ctx.state === 'suspended') ctx.resume();
   const S = chSound(), out = ctx.createGain(), lp = ctx.createBiquadFilter(), a = ctx.currentTime + 0.03, b = a + 1.1;
   out.gain.value = chVol() * S.gain * 1.3; lp.type = 'lowpass'; lp.frequency.value = S.lp; lp.Q.value = S.q; lp.connect(out); out.connect(ctx.destination);
+  if (S.piano && chPianoChord(c, a, b, lp)) { setTimeout(() => out.disconnect(), (b - ctx.currentTime + 2) * 1000); return; }
   for (const [k, lvl] of [[c.bass, 0.7], ...c.keys.map(k => [k, 1])]) {
     const g = ctx.createGain(); g.gain.setValueAtTime(0, a); g.gain.linearRampToValueAtTime(lvl, a + Math.min(S.att, 0.08));
     g.gain.setValueAtTime(lvl, b); g.gain.linearRampToValueAtTime(0, b + S.rel); g.connect(lp);
@@ -7449,7 +7591,7 @@ function initChords() {
   // a phone's bar is one row of eight already: there, Chords is turned on in ⋯
   const narrow = matchMedia('(max-width: 640px)'), fit = () => { b.hidden = narrow.matches; }; fit(); narrow.addEventListener?.('change', fit);
   const row = document.createElement('label'); row.className = 'rv-pr'; row.id = 'rvChRow';
-  row.innerHTML = '<span>Play along</span><span class="rv-chs"><select id="rvChStyle" aria-label="Play along" title="Chords: triads and sus, made of the rāg’s svaras · Shells: open fifths · Drone: Sa–Pa all through · Piano: the svaras found, struck as they were sung"><option value="off">Off</option><option value="chords">Chords</option><option value="shells">Shells</option><option value="drone">Drone</option><option value="piano">Piano</option></select> <select id="rvChPace" aria-label="How often chords change" title="Calm: a new chord where the voice settles on a new note · Busy: at most phrases"><option value="calm">Calm</option><option value="busy">Busy</option></select> <select id="rvChVol" aria-label="Chord volume"><option value="soft">Soft</option><option value="medium">Medium</option><option value="loud">Loud</option></select> <select id="rvChSound" aria-label="Chord sound" title="Strings: a light string pad · Soft pad: gentler still · Reed: like a harmonium"><option value="strings">Strings</option><option value="pad">Soft pad</option><option value="reed">Reed</option></select></span>';
+  row.innerHTML = '<span>Play along</span><span class="rv-chs"><select id="rvChStyle" aria-label="Play along" title="Chords: triads and sus, made of the rāg’s svaras · Shells: open fifths · Drone: Sa–Pa all through · Piano: the svaras found, struck as they were sung"><option value="off">Off</option><option value="chords">Chords</option><option value="shells">Shells</option><option value="drone">Drone</option><option value="piano">Piano</option></select> <select id="rvChPace" aria-label="How often chords change" title="Calm: a new chord where the voice settles on a new note · Busy: at most phrases"><option value="calm">Calm</option><option value="busy">Busy</option></select> <select id="rvChVol" aria-label="Chord volume"><option value="soft">Soft</option><option value="medium">Medium</option><option value="loud">Loud</option></select> <select id="rvChSound" aria-label="Chord sound" title="Strings: a light string pad · Soft pad: gentler still · Reed: like a harmonium · Grand piano: a real concert grand, each chord struck"><option value="strings">Strings</option><option value="pad">Soft pad</option><option value="reed">Reed</option><option value="piano">Grand piano</option></select></span>';
   $('rvMore').prepend(row);
   const redo = () => { CH.sig = ''; CH.sheetSig = ''; chControls(); RV_LAYER.key = ''; rvDraw(); chPlayStart(); if (RV_TAB === 'chords') chSheetRender(); };
   b.addEventListener('click', () => { savePref('chOn', !chWant()); if (!chWant()) chPlayStop(); redo(); });

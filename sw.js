@@ -1,13 +1,13 @@
 /* Sangeet Diary's service worker: the app opens offline and at once.
  * - The page: from the network when it answers within 3 s (so a new build shows the next time you open it), else the
  *   copy kept from the last visit.
- * - The manifest and icons: kept with this build's version.
+ * - The manifest, icons and the grand piano's notes (piano.json): kept with this build's version.
  * - Google Fonts (the stylesheet and the font files): the kept copy at once, refreshed behind it, so the fonts are
  *   there offline too.
  * Nothing else is touched: the helper's /api, audio, uploads and other sites go straight to the network. */
-const VERSION = 'd8ee02b1f1';
+const VERSION = '06d4682915';
 const SHELL = 'shell-' + VERSION, FONTS = 'fonts-v1';
-const FILES = ['sangeet-diary.html', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/maskable-512.png', 'icons/apple-touch-icon.png', 'icons/favicon-32.png'];
+const FILES = ['sangeet-diary.html', 'piano.json', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/maskable-512.png', 'icons/apple-touch-icon.png', 'icons/favicon-32.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(SHELL).then(c => c.addAll(FILES.map(f => new Request(f, { cache: 'reload' })))).then(() => self.skipWaiting()));
