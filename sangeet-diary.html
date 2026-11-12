@@ -171,7 +171,7 @@
       radial-gradient(30% 40% at 50% 40%, rgba(226, 179, 131, 0.16), transparent 70%);
     filter: blur(40px); animation: drift 14s ease-in-out infinite alternate; will-change: transform;
   }
-  .player.away::before { animation-play-state: paused; } /* off screen: the glow rests (initHome watches) */
+  .player.away::before, .player:not(.playing)::before { animation-play-state: paused; } /* off screen or silent: the glow rests (initHome watches; setPlayState sets .playing) */
   .player::after {
     content: ''; position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none;
     box-shadow: inset 0 0 0 1px var(--hair), inset 0 1px 0 rgba(255, 255, 255, 0.06);
@@ -272,10 +272,10 @@
 
   /* ---------- Performance mode ---------- */
   /* the stage (Perform, the recording graph): light by day, dark when the device is in dark mode */
-  .perform, .recv { color-scheme: light; --st-bg: #FBFAF7; --st-card: #F1EFEA; --st-ink: #1F1D1A; --st-ink-rgb: 31 29 26; --st-accent: #B5520F; --st-me: #D6336C; --st-tip: rgba(255, 255, 255, 0.97); --st-orn: #4F55C9;
+  .perform, .recv { color-scheme: light; --st-bg: #FBFAF7; --st-card: #F1EFEA; --st-ink: #1F1D1A; --st-ink-rgb: 31 29 26; --st-accent: #B5520F; --st-gold: #A87800; --st-me: #D6336C; --st-tip: rgba(255, 255, 255, 0.97); --st-orn: #4F55C9;
     --sv-S: #E0600F; --sv-R: #C98300; --sv-G: #9C8A00; --sv-M: #23955A; --sv-P: #0B8FA6; --sv-D: #4F58D8; --sv-N: #9C45C2; }
   @media (prefers-color-scheme: dark) {
-    .perform, .recv { color-scheme: dark; --st-bg: #121110; --st-card: #1B1A18; --st-ink: #F3EEE4; --st-ink-rgb: 243 238 228; --st-accent: #FFB470; --st-me: #FF6FA0; --st-tip: rgba(10, 10, 9, 0.94); --st-orn: #B9BDFF;
+    .perform, .recv { color-scheme: dark; --st-bg: #121110; --st-card: #1B1A18; --st-ink: #F3EEE4; --st-ink-rgb: 243 238 228; --st-accent: #FFB470; --st-gold: #FFD166; --st-me: #FF6FA0; --st-tip: rgba(10, 10, 9, 0.94); --st-orn: #B9BDFF;
       --sv-S: #FF7D38; --sv-R: #FFB547; --sv-G: #E3D95A; --sv-M: #6FD49A; --sv-P: #4CC9DD; --sv-D: #8C93FF; --sv-N: #D484F2; }
   }
   .perform { position: fixed; inset: 0; z-index: 95; background: var(--st-bg); color: var(--st-ink); display: flex; flex-direction: column; }
@@ -911,6 +911,12 @@
   .fv-now button { pointer-events: auto; height: 30px; padding: 0 12px; font-size: 14px; }
   .fv-n { display: inline-flex; align-items: baseline; gap: 8px; padding: 4px 14px 5px; border-radius: 999px; background: var(--st-tip); border: 1.5px solid color-mix(in srgb, var(--c) 55%, transparent); font-size: 24px; font-weight: 700; color: var(--st-ink); transition: border-color .25s, box-shadow .25s; }
   .fv-now.in .fv-n { border-color: var(--c); box-shadow: 0 0 0 4px color-mix(in srgb, var(--c) 18%, transparent); }
+  .fv-n .mo-star { display: none; width: 15px; height: 15px; align-self: center; margin-left: -3px; color: var(--st-gold); }
+  .fv-now.gold .fv-n { color: var(--st-gold); border-color: var(--st-gold); box-shadow: 0 0 0 4px color-mix(in srgb, var(--st-gold) 22%, transparent), 0 0 22px color-mix(in srgb, var(--st-gold) 45%, transparent); animation: fvGold .5s var(--spring-ease); }
+  .fv-now.gold .fv-n .mo-star { display: block; animation: moChip .46s var(--spring-ease); }
+  .fv-now.gold .fv-d b { color: var(--st-gold); }
+  @keyframes fvGold { 0% { transform: scale(.94); } 55% { transform: scale(1.07); } 100% { transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .fv-now.gold .fv-n, .fv-now.gold .fv-n .mo-star { animation: none; } }
   .fv-sn { font-size: 14px; font-weight: 500; color: rgb(var(--st-ink-rgb) / 0.62); }
   .fv-d { font-size: 15px; color: rgb(var(--st-ink-rgb) / 0.75); font-variant-numeric: tabular-nums; }
   .fv-d b { color: var(--st-ink); }
@@ -1025,6 +1031,7 @@
   .mo-star { width: 12px; height: 12px; fill: currentColor; flex: none; }
   .rv-mo { display: inline-flex; align-items: center; gap: 6px; font-variant-numeric: tabular-nums; white-space: nowrap; }
   .rv-mo[hidden] { display: none; }
+  .rv-mo .mo-star, #rvMoments h3 .mo-star { color: var(--st-gold); }
   .rv-mo.pop .mo-star { animation: moChip .46s var(--spring-ease); }
   @keyframes moChip { 0% { transform: scale(.6) rotate(-30deg); } 55% { transform: scale(1.5) rotate(12deg); } 100% { transform: none; } }
   .mo-row { display: grid; grid-template-columns: minmax(0, 1fr) 76px auto auto; gap: 4px 14px; align-items: center; padding: 10px 0; border-top: 1px solid rgb(var(--st-ink-rgb) / 0.08); }
@@ -2783,6 +2790,39 @@ function learnSequence(startLi) {
  * ------------------------------------------------------------------ */
 let ctx = null;
 let session = null;
+
+/* The audio engine rests when nothing sounds. A running AudioContext keeps the iPad's sound hardware awake even in
+ * silence, so a few seconds after the last sound ends it's suspended, and the next sound wakes it. Every source
+ * started on ctx is counted until it ends, so this needn't know each feature: the player, chords, notes, the
+ * harmonium, MIDI and the count-in all start sources. The mic in Perform (a stream, not a source) and a recording
+ * playing (whose latency is read from ctx) keep it awake too. A source left running forever just keeps it awake,
+ * as before. */
+const AUDIO_IDLE = { live: 0, at: 0, REST_MS: 8000 };
+function audioWake() {
+  AUDIO_IDLE.at = performance.now();
+  if (ctx && ctx.state !== 'running' && ctx.state !== 'closed') ctx.resume().catch(() => {});
+}
+function audioBusy() {
+  if (AUDIO_IDLE.live > 0 || session || (typeof PSING !== 'undefined' && PSING.on)) return true;
+  for (const m of document.querySelectorAll('audio, video')) if (!m.paused) return true;
+  return false;
+}
+if (typeof AudioScheduledSourceNode === 'function' && typeof document !== 'undefined') {
+  const start = AudioScheduledSourceNode.prototype.start;
+  AudioScheduledSourceNode.prototype.start = function (...a) {
+    if (ctx && this.context === ctx) {
+      AUDIO_IDLE.live++;
+      this.addEventListener('ended', () => { AUDIO_IDLE.live--; AUDIO_IDLE.at = performance.now(); }, { once: true });
+      audioWake();
+    }
+    return start.apply(this, a);
+  };
+  setInterval(() => {
+    if (!ctx || ctx.state !== 'running') return;
+    if (audioBusy()) { AUDIO_IDLE.at = performance.now(); return; }
+    if (performance.now() - AUDIO_IDLE.at > AUDIO_IDLE.REST_MS) ctx.suspend().catch(() => {});
+  }, 2000);
+}
 
 function bpm() { return +$('bpm').value; }
 function sa() { return +$('sa').value * Math.pow(2, +$('oct').value + +$('cents').value / 1200); }
@@ -6407,7 +6447,7 @@ function rvDraw() {
     const f = 'italic 500 11px Inter, sans-serif', w = tw('kaṇ', f) + 6, up = A.contour[i] > rvRef(k) - 1;
     labels.push(() => { if (pxs > 40 && room(xx - w / 2, yy + (up ? -21 : 9), w, 14)) say('kaṇ', xx, yy + (up ? -14 : 16), f, 0.55); });
   }
-  if (!OUT) moMarks(g, x, bot, colOf, P.l, W - P.r); // ✦ where the rāg's phrases are sung (0873)
+  if (!OUT) moMarks(g, x, bot, P.l, W - P.r); // ✦ where the rāg's phrases are sung (0873)
   for (const L of labels) L();
   if (!OUT && RVY.pin) say('all', 4, Hh - 9, '600 11px Inter, sans-serif', 0.45, 'left'); // the pitch range pinned to the whole recording
   // hovering: a hairline and a ringed dot where the pointer reads the pitch
@@ -6466,10 +6506,10 @@ function rvDraw() {
       q.font = '600 9px Inter, sans-serif'; q.textBaseline = 'top'; q.textAlign = 'left'; q.fillStyle = ink(0.38);
       let lastX = -1e9;
       A.phrases.forEach((p, i) => { const px = X(p.s * H); if (px - lastX < 26 || !p.units.length) return; q.fillRect(px, 0, 1, 4); q.fillText(String(i + 1), px + 2, 1); lastX = px; });
-      moOverMarks(q, X, h, colOf); // 0873
+      moOverMarks(q, X, h); // 0873
     }
     o.drawImage(O, 0, 0, w, h);
-    moOverPop(o, X, h, colOf);
+    moOverPop(o, X, h);
     // the piece's sections (sthāyī, antarā…), where its found or marked lines say they're sung: a tinted span each
     {
       const secs = [];
@@ -7557,24 +7597,25 @@ function moStarPath(g, x, y, z) {
 }
 const moMid = m => (m.on + m.end) / 2;
 const moKey = m => m.notes.at(-1).semi;
+const moMarkGold = () => (moDarkPage() ? '#FFD166' : '#A87800'); // the ✦ marks, the gold of --st-gold
 // on the plot, in the row above each phrase's rule
-function moMarks(g, x, bot, colOf, l, r) {
+function moMarks(g, x, bot, l, r) {
   for (const m of REC.A.moments || []) {
     const mx = x(moMid(m)); if (mx < l || mx > r) continue;
-    g.fillStyle = colOf(moKey(m)); moStarPath(g, mx, bot + 9, 6);
+    g.fillStyle = moMarkGold(); moStarPath(g, mx, bot + 9, 6);
   }
 }
 // on the strip of the whole recording, drawn once with its line
-function moOverMarks(q, X, h, colOf) {
-  for (const m of REC.A.moments || []) { q.fillStyle = colOf(moKey(m)); moStarPath(q, X(moMid(m)), h - 7, 4.5); }
+function moOverMarks(q, X, h) {
+  for (const m of REC.A.moments || []) { q.fillStyle = moMarkGold(); moStarPath(q, X(moMid(m)), h - 7, 4.5); }
 }
 // the one just sung gives a small pop there
-function moOverPop(o, X, h, colOf) {
+function moOverPop(o, X, h) {
   const now = performance.now();
   for (const m of REC.A.moments || []) {
     if (!m.pop) continue;
     const k = (now - m.pop) / 460; if (k >= 1) { m.pop = 0; continue; }
-    o.fillStyle = colOf(moKey(m)); o.globalAlpha = 1 - k * 0.3;
+    o.fillStyle = moMarkGold(); o.globalAlpha = 1 - k * 0.3;
     moStarPath(o, X(moMid(m)), h - 7, 4.5 + 5 * Math.sin(Math.PI * Math.min(1, k * 1.1)));
     o.globalAlpha = 1;
   }
@@ -7631,7 +7672,7 @@ function moPanel() {
       <div class="mo-at">${at.length ? `<span class="mo-n">${at.length}×</span>${at.map(([m, i]) => `<a role="button" tabindex="0" data-mo="${i}">${rvFmt(m.on).replace(/\.\d$/, '')}</a>`).join('')}` : '<span class="m">not heard here</span>'}</div>
       <div class="rpa"><button class="pbtn" data-mop="${pi}" title="This phrase as written, on the keyboard">Notes</button></div></div>`;
   };
-  box.innerHTML = `<h3>The rāg's phrases</h3>${list.map(row).join('')}`;
+  box.innerHTML = `<h3>${MO_STAR} The rāg's phrases</h3>${list.map(row).join('')}`;
 }
 // a phrase as written, on the keyboard (0.4 s a note, as the rāg page plays them)
 function moHear(ph, btn) {
@@ -8779,6 +8820,7 @@ function initTakes() {
 const FREE = { on: false, stream: null, ctx: null, an: null, buf: null, f: 1, x: null, timer: 0, t0: 0, line: [], hop: 0.01,
   lastI: -1, lastC: NaN, raf: 0, view: 0, yr: null, held: null, chunks: [], n: 0, a0: NaN, proc: null, sink: null,
   take: null, url: '', at: '', drone: null };
+const FREE_GOLD = 1; // s in tune and steady before the note turns gold
 const FREE_HOLD = 0.35, FREE_MAX = 20 * 60; // s of steady pitch that counts as a held note · the longest take
 
 const freeSa = () => +PREFS.freeSa || sa();
@@ -8931,9 +8973,22 @@ function freeHeldAt(L, i) {
   const k = rvNear(m);
   return { k, off: m - rvRef(k), sd };
 }
+// gold is earned: a second in tune (10¢) and steady. Once there it holds through a little drift (14¢, a little wavy), so
+// it doesn't flicker; a real drift ends it and the second starts over
+function freeGold(H, h, i) {
+  const off = Math.abs(h.off), good = off <= 10 && h.sd < 7, keep = off <= 14 && h.sd < 14;
+  let run = H?.run ?? null, gold = !!H?.gold;
+  if (gold ? !keep : !good) { run = null; gold = false; }
+  else if (run == null) run = i;
+  if (run != null && (i - run) * FREE.hop >= FREE_GOLD) gold = true;
+  return { run, gold };
+}
 function freeHeld(L, i) {
   const h = freeHeldAt(L, i), H = FREE.held;
-  if (h) FREE.held = H && H.k === h.k && i - H.last < 15 ? { ...h, from: H.from, last: i } : { ...h, from: i - Math.round(FREE_HOLD / FREE.hop) + 1, last: i };
+  if (h) {
+    const same = H && H.k === h.k && i - H.last < 15;
+    FREE.held = { ...h, from: same ? H.from : i - Math.round(FREE_HOLD / FREE.hop) + 1, last: i, ...freeGold(same ? H : null, h, i) };
+  }
   freeSay();
 }
 const freeTune = off => { const a = Math.round(Math.abs(off)); return a <= 10 ? 'in tune' : `${a}¢ ${off < 0 ? 'flat' : 'sharp'}`; };
@@ -8948,10 +9003,15 @@ function freeSay() {
   const now = FREE.lastI, live = H && now - H.last < 15;
   if (!H) return;
   const len = (H.last - H.from + 1) * FREE.hop, out = !freeOwn(H.k) ? ` · <i>not in ${freeRaag().name.replace(' thāt', '')}</i>` : '';
-  const s = `<b class="fv-n" style="--c: var(--sv-${ROM[rvSv(H.k)]})">${freeNoteHTML(H.k)}</b><span class="fv-d"><b>${freeTune(H.off)}</b> · ${freeSteady(H.sd)} · ${len.toFixed(1)} s${out}</span>`;
-  if (s !== FREE.said || el.hidden) { FREE.said = s; el.innerHTML = s; el.hidden = false; }
+  const n = `<b class="fv-n" style="--c: var(--sv-${ROM[rvSv(H.k)]})">${MO_STAR}${freeNoteHTML(H.k)}</b>`, d = `<b>${freeTune(H.off)}</b> · ${freeSteady(H.sd)} · ${len.toFixed(1)} s${out}`, s = n + d;
+  if (s !== FREE.said || el.hidden) { // the pill stays while the same note goes on, so its turn to gold plays once
+    const box = n === FREE.saidN && !el.hidden && el.querySelector('.fv-d');
+    if (box) box.innerHTML = d; else el.innerHTML = `${n}<span class="fv-d">${d}</span>`;
+    FREE.saidN = n; FREE.said = s; el.hidden = false;
+  }
   el.classList.toggle('gone', !live);
   el.classList.toggle('in', live && Math.abs(H.off) <= 10);
+  el.classList.toggle('gold', live && H.gold);
 }
 async function freeStop() {
   if (FREE.asking) { freeCancel(); return; }
@@ -10991,6 +11051,7 @@ function setPlayState(state) {
     $(id).setAttribute('aria-label', state === 'playing' ? 'Pause' : state === 'paused' ? 'Resume' : 'Play');
   });
   $('status').dataset.s = state;
+  $('player')?.classList.toggle('playing', state === 'playing'); // its ember glow drifts only while it plays
   if ($('pfPlay')) pfPlayState(); // Perform's ▶ too, when a piece ends by itself
   window.miniIsland?.(state);
   $('statusTxt').textContent = state === 'playing' ? 'Playing' : state === 'paused' ? 'Paused' : 'Ready';
