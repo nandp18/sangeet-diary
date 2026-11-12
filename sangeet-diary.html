@@ -280,7 +280,27 @@
   }
   .perform { position: fixed; inset: 0; z-index: 95; background: var(--st-bg); color: var(--st-ink); display: flex; flex-direction: column; }
   .perform .pbar, .perform .pnav { flex: none; display: flex; align-items: center; gap: 8px; padding: 10px 14px; padding-top: max(10px, env(safe-area-inset-top)); }
-  .perform .pnav { padding-bottom: max(12px, env(safe-area-inset-bottom)); justify-content: center; }
+  /* the bottom row: Back / Next in the middle, and at the right the buttons that only change how the lines look */
+  .perform .pnav { padding-bottom: max(12px, env(safe-area-inset-bottom)); display: grid; grid-template-columns: 1fr auto 1fr; }
+  .pnav-go { grid-column: 2; display: flex; gap: 8px; }
+  .pview { grid-column: 3; justify-self: end; display: inline-flex; gap: 6px; }
+  .pview .pbtn { min-width: 40px; height: 40px; padding: 0 12px; font-size: 14px; border-color: transparent; color: rgb(var(--st-ink-rgb) / 0.7); }
+  .pview .pbtn:hover { background: rgb(var(--st-ink-rgb) / 0.06); }
+  .pview .pbtn[aria-pressed="false"] { opacity: 1; text-decoration: line-through; text-decoration-color: rgb(var(--st-ink-rgb) / 0.4); }
+  .pview .pbtn[hidden] { display: none; }
+  @media (max-width: 700px) { .perform .pnav { grid-template-columns: auto; justify-content: center; row-gap: 4px; } .pnav-go, .pview { grid-column: 1; justify-self: center; } .pview { order: -1; } }
+  /* the two ways to practice, Sing and Pitch: one pill, an icon each, filled when on (not faded when off: they're
+     choices, not settings) */
+  .pmodes { display: inline-flex; align-items: center; gap: 2px; padding: 2px; border: 1px solid rgb(var(--st-ink-rgb) / 0.18); border-radius: 999px; }
+  .pmode { display: inline-flex; align-items: center; gap: 7px; height: 40px; padding: 0 14px 0 12px; border: 0; font-size: 15px; font-weight: 600; transition: background .2s, color .2s; }
+  .pmode[hidden] { display: none; }
+  .pmode:hover { background: rgb(var(--st-ink-rgb) / 0.07); }
+  .perform .pmode[aria-pressed="false"] { opacity: 1; }
+  .pmode .pico { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .pmode.rv-sing[aria-pressed="true"]::before { display: none; } /* the icon says it; the mic pulses instead */
+  .pmode.rv-sing[aria-pressed="true"] .pico { animation: rvMePulse 1.2s ease-in-out infinite; }
+  #pfPitch[aria-pressed="true"] { background: var(--st-ink); color: var(--st-bg); }
+  @media (prefers-reduced-motion: reduce) { .pmode.rv-sing[aria-pressed="true"] .pico { animation: none; } }
   /* today's riyāz, one after another: a dot per item, where you are, and Done · next */
   .prun { flex: none; display: flex; align-items: center; justify-content: center; gap: 12px; padding: 8px 14px 0; animation: prunIn .4s var(--spring-ease); }
   .prun[hidden] { display: none; }
@@ -376,7 +396,7 @@
   .pkeys .pbtn { height: 36px; font-size: 14px; white-space: nowrap; }
   .pkeys .pbtn[aria-pressed="true"] { background: rgb(var(--st-ink-rgb) / 0.12); }
   @media (max-width: 640px) { .pkeys { flex-direction: column-reverse; align-items: stretch; gap: 6px; } .pkeys canvas { height: 56px; } .pkeys .pbtn { align-self: flex-end; height: 32px; } }
-  .perform.pitch #pfSmaller, .perform.pitch #pfBigger, .perform.pitch #pfSargam, .perform.pitch .pnav, .perform.pitch .pwheel { display: none; }
+  .perform.pitch .pnav, .perform.pitch .pwheel { display: none; }
   .pcount { display: inline-grid; place-items: center; min-width: 1.5em; height: 1.5em; margin-right: 0.5em; padding: 0 0.3em; border-radius: 999px; border: 2px solid #FF7D38; color: #FF7D38; font-size: 0.8em; font-weight: 600; font-variant-numeric: tabular-nums; animation: pcount .35s ease-out; }
   @keyframes pcount { from { transform: scale(1.35); opacity: .4; } }
   @media (prefers-reduced-motion: reduce) { .pcount { animation: none; } }
@@ -1902,11 +1922,10 @@
     <button type="button" class="pbtn pplay" id="pfPlay" aria-label="Play or pause"></button>
     <span class="ptempo" id="pfBpmWrap"><button type="button" class="pbtn" id="pfSlower" aria-label="Slower">−</button><span class="pbpm"><b id="pfBpm">80</b> BPM</span><button type="button" class="pbtn" id="pfFaster" aria-label="Faster">+</button></span>
     <div class="ptitlebox"><button type="button" class="pbtn pstep" id="pfPrevPiece" aria-label="Previous alankar" hidden>‹</button><div class="ptitle" id="pfTitle"></div><button type="button" class="pbtn pstep" id="pfNextPiece" aria-label="Next alankar" hidden>›</button></div>
-    <button type="button" class="pbtn rv-sing" id="pfSing" aria-pressed="false" title="Sing along: the mic marks each svara in tune, flat or sharp">Sing</button>
-    <button type="button" class="pbtn" id="pfPitch" aria-pressed="false" title="Show the melody as a line of pitch">Pitch</button>
-    <button type="button" class="pbtn" id="pfSmaller" aria-label="Smaller text">A−</button>
-    <button type="button" class="pbtn" id="pfBigger" aria-label="Bigger text">A+</button>
-    <button type="button" class="pbtn" id="pfSargam" aria-pressed="true">Sargam</button>
+    <span class="pmodes" role="group" aria-label="Ways to practice">
+      <button type="button" class="pbtn pmode rv-sing" id="pfSing" aria-pressed="false" title="Sing along: the mic marks each svara in tune, flat or sharp"><svg class="pico" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg><span class="plbl">Sing</span></button>
+      <button type="button" class="pbtn pmode" id="pfPitch" aria-pressed="false" title="See the melody as a line of pitch, with a keyboard"><svg class="pico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 15c2.5 0 3-6 5.5-6s2.5 8 5 8 3-10 7.5-10"/></svg><span class="plbl">Pitch</span></button>
+    </span>
     <button type="button" class="pbtn pexit" id="pfExit" aria-label="Exit performance mode">✕</button>
   </div>
   <div class="pcd" id="pfCount" hidden aria-live="polite"></div>
@@ -1918,7 +1937,8 @@
   <div class="pkeys" id="pfKeysRow" hidden><canvas id="pfKeys" aria-label="A keyboard lighting the note being sung"></canvas><button type="button" class="pbtn" id="pfKeySa" aria-pressed="false">Sa on C♯</button></div>
   <div class="pwheel" id="pfWheel" aria-hidden="true"></div>
   <div class="prun" id="pfRun" hidden aria-label="Today’s practice"><span class="prun-dots" id="pfRunDots" aria-hidden="true"></span><span class="prun-k" id="pfRunK"></span><button type="button" class="pbtn prun-go" id="pfRunGo"></button></div>
-  <div class="pnav"><button type="button" class="pbtn wide" id="pfPrev">‹ Back</button><button type="button" class="pbtn wide" id="pfNext">Next ›</button></div>
+  <div class="pnav"><span class="pnav-go"><button type="button" class="pbtn wide" id="pfPrev">‹ Back</button><button type="button" class="pbtn wide" id="pfNext">Next ›</button></span>
+    <span class="pview" role="group" aria-label="How the lines look"><button type="button" class="pbtn" id="pfSmaller" aria-label="Smaller text">A−</button><button type="button" class="pbtn" id="pfBigger" aria-label="Bigger text">A+</button><button type="button" class="pbtn" id="pfSargam" aria-pressed="true" title="Show the sargam under the words">Sargam</button></span></div>
 </div>
 
 <div class="recv freev" id="freev" role="dialog" aria-modal="true" aria-label="Sing freely" hidden>
@@ -3414,6 +3434,7 @@ function tick() {
     const step = s.steps[s.idx];
     const bd = step.dur || 60 / bpm() / (step.speed || 1);
     if (!step.phrase) scheduleTabla(s, step.col, s.nextTime, bd);
+    if (step.count) pfClick(s.nextTime, step.count === 4, s.master); // Perform's count-in before an alankar's next part
     scheduleMelody(s, step, s.nextTime, bd);
     if (s.kind === 'perform' && typeof psingQueue === 'function') psingQueue(step, s.nextTime, bd); // Sing along marks each note (08939)
     s.queue.push({ t: s.nextTime, idx: s.idx, step });
@@ -3426,7 +3447,11 @@ function tick() {
     if (step.end) {
       s.ended = true;
       const stopAt = s.nextTime + 1.5;
-      setTimeout(() => { if (session === s) stop(); }, (stopAt - ctx.currentTime) * 1000);
+      setTimeout(() => {
+        if (session !== s) return;
+        stop();
+        if (s.kind === 'perform' && B.kind === 'alankar' && !$('perform').hidden) pfGo(0); // sung through: back to the top
+      }, (stopAt - ctx.currentTime) * 1000);
       break;
     }
     s.idx++;
@@ -3454,7 +3479,10 @@ function playPhrase(id, name) {
 }
 function sequenceFor(kind) {
   if (kind === 'phrase') return { steps: PHRASE.steps, loopStart: 0 };
-  return kind === 'learn' ? learnSequence(LEARN.idx) : buildSequence($('mode').value, $('loop').checked && !(kind === 'perform' && B.kind === 'alankar' && !$('perform').hidden));
+  if (kind === 'learn') return learnSequence(LEARN.idx);
+  const pfAlk = kind === 'perform' && B.kind === 'alankar' && !$('perform').hidden;
+  const seq = buildSequence($('mode').value, $('loop').checked && !pfAlk);
+  return pfAlk ? pfCountSteps(seq) : seq;
 }
 function play(fromIdx = 0, kind = 'perform') {
   if (session) killSession(session);
@@ -9501,7 +9529,7 @@ function psingCancel() {
 function psingButton() {
   const b = $('pfSing'); if (!b) return;
   const on = PSING.on || PSING.asking;
-  b.setAttribute('aria-pressed', on); b.textContent = on ? 'Stop' : 'Sing';
+  b.setAttribute('aria-pressed', on); b.querySelector('.plbl').textContent = on ? 'Stop' : 'Sing';
   b.title = on ? 'Stop singing, and see how it went' : 'Sing along: the mic marks each svara in tune, flat or sharp';
 }
 function psingSay(html) { const el = $('pfSum'); if (!el) return; el.innerHTML = html; el.hidden = false; }
@@ -11546,6 +11574,7 @@ function renderPerform() {
   $('pfPrevPiece').title = alks[ai - 1] ? alks[ai - 1].pick : ''; $('pfNextPiece').title = alks[ai + 1] ? alks[ai + 1].pick : '';
   $('pfBpmWrap').hidden = !B.sections.length;
   $('pfSargam').setAttribute('aria-pressed', PF.sargam);
+  $('pfSargam').hidden = B.kind === 'alankar'; // an alankar has no words to put the sargam under
   pfGo(PF.cur, false);
   pvRefresh();
 }
@@ -11557,6 +11586,8 @@ function pfFollow(step) {
   if (p) { p.classList.remove('beat'); void p.offsetWidth; p.classList.add('beat'); }
   pfTurn(step.col);
   PF.count?.remove();
+  if (step.count) return pfCountBeat(step);
+  if (!PF.counting) $('pfCount').hidden = true;
   if (step.silent) return pfCountIn(step);
   const key = `${step.sec}-${step.row}-${step.col}`;
   const k = PF.lineOf?.[key];
@@ -11587,6 +11618,39 @@ function pfCountIn(step) {
   const cnt = PF.count ??= Object.assign(document.createElement('span'), { className: 'pcount' });
   cnt.textContent = k - s.currentIdx;
   line.querySelector('.psg')?.prepend(cnt);
+}
+// an alankar in Perform counts in again before each part after the first (and each speed after the first), as it
+// does before the first: the silent beats between parts become four, each a click with its number shown big
+function pfCountSteps({ steps, loopStart }) {
+  const out = [];
+  let sung = false;
+  for (let i = 0; i < steps.length;) {
+    if (!steps[i].silent) { sung = true; out.push(steps[i++]); continue; }
+    let j = i;
+    while (j < steps.length && steps[j].silent && !steps[j].end) j++;
+    if (sung && j < steps.length && !steps[j].silent) for (let n = 4; n >= 1; n--) out.push({ silent: true, col: steps[i].col, count: n, lead: steps[i].lead });
+    else out.push(...steps.slice(i, j));
+    i = j;
+    if (steps[i]?.end) out.push(steps[i++]);
+  }
+  return { steps: out, loopStart };
+}
+function pfCountBeat(step) {
+  const cd = $('pfCount');
+  cd.hidden = false; cd.textContent = step.count; cd.classList.remove('beat'); void cd.offsetWidth; cd.classList.add('beat');
+  // and the lines turn to the part coming in
+  const s = session; if (!s) return;
+  let k = s.currentIdx;
+  while (k < s.steps.length && s.steps[k].silent) k++;
+  const nx = s.steps[k], li = nx && PF.lineOf?.[`${nx.sec}-${nx.row}-${nx.col}`];
+  if (li != null && li !== PF.cur) pfGo(li);
+}
+// one click of a count-in: higher on the first
+function pfClick(t, first, out = ctx.destination) {
+  const o = ctx.createOscillator(), g = ctx.createGain();
+  o.frequency.value = first ? 1760 : 1320;
+  g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.35, t + 0.002); g.gain.exponentialRampToValueAtTime(0.001, t + 0.06);
+  o.connect(g).connect(out); o.start(t); o.stop(t + 0.08);
 }
 // the tāl wheel: one tick per beat from sam at the top (a longer tick and its marker where each vibhāg starts), the
 // beats sung so far in this āvartan lit, an arc filling round, and a hand that sweeps through each beat
@@ -11628,7 +11692,10 @@ function pfTurn(col) {
   w.querySelector('.num').textContent = col + 1;
   w.querySelector('.bol').textContent = TAAL.bols?.[col] || TAAL.name;
 }
-function pfPlayState() { $('pfPlay').innerHTML = session ? ICON.pause : ICON.play; }
+function pfPlayState() {
+  $('pfPlay').innerHTML = session ? ICON.pause : ICON.play;
+  if (!session && !PF.counting) $('pfCount').hidden = true; // paused or stopped mid count-in
+}
 function pfGo(i, smooth = true) {
   const rows = [...$('pfBody').querySelectorAll('.pline')];
   if (!rows.length) return;
@@ -11691,12 +11758,7 @@ function pfStartAt(k) {
   if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
   if (ctx.state === 'suspended') ctx.resume();
   const beat = 60 / bpm(), t0 = ctx.currentTime + 0.08, cd = $('pfCount');
-  for (let i = 0; i < n; i++) {
-    const o = ctx.createOscillator(), g = ctx.createGain(), t = t0 + i * beat;
-    o.frequency.value = i === 0 ? 1760 : 1320;
-    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.35, t + 0.002); g.gain.exponentialRampToValueAtTime(0.001, t + 0.06);
-    o.connect(g).connect(ctx.destination); o.start(t); o.stop(t + 0.08);
-  }
+  for (let i = 0; i < n; i++) pfClick(t0 + i * beat, i === 0);
   PF.counting = { timers: [] };
   for (let i = 0; i < n; i++) PF.counting.timers.push(setTimeout(() => {
     cd.hidden = false; cd.textContent = n - i; cd.classList.remove('beat'); void cd.offsetWidth; cd.classList.add('beat');
