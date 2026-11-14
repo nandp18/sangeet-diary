@@ -1680,6 +1680,37 @@
 .pg-pcl b { color: rgb(var(--st-ink-rgb) / 0.85); font-weight: 600; }
 .pg-pcm { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 14px; }
 .pg-pc .hgo { font-size: 13px; color: var(--st-accent); }
+
+/* How to learn (08946): today's principle on Home, and the page of all of them, numbered rows with hairlines */
+.hlp { width: 100%; text-align: left; font: inherit; color: inherit; }
+.hlp h3 { font-family: var(--display); font-weight: 600; font-size: 21px; letter-spacing: -0.02em; margin: 6px 0 4px; }
+.hlp .hm { font-size: 14px; line-height: 1.5; max-width: 62ch; }
+.hlp-src { margin: 10px 0 0; font-size: 12px; color: var(--ink-3); }
+.learnv .rv-scroll { padding-top: 6px; }
+.ln-in { max-width: 680px; margin: 0 auto; }
+.ln-lead { margin: 4px 0 14px; font-size: 15px; line-height: 1.55; color: rgb(var(--st-ink-rgb) / 0.75); }
+.ln-jump { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
+.ln-jump .chip { color: var(--st-ink); border-color: rgb(var(--st-ink-rgb) / 0.16); transition: background-color .15s, transform .2s var(--spring-ease); }
+.ln-jump .chip:hover { background: var(--st-card); }
+.ln-jump .chip:active { transform: scale(.95); }
+.learnv .ln-g { scroll-margin-top: 4px; }
+.learnv .ln-g h3 { margin-top: 34px; }
+.ln-gn { margin: -2px 0 6px; font-size: 14px; color: rgb(var(--st-ink-rgb) / 0.62); }
+.ln-ps { list-style: none; margin: 0; padding: 0; }
+.ln-p { display: grid; grid-template-columns: 28px 1fr; gap: 0 10px; padding: 16px 0 18px; border-top: 1px solid rgb(var(--st-ink-rgb) / 0.1); scroll-margin-top: 12px; border-radius: 4px; }
+.ln-n { font-family: var(--display); font-size: 15px; font-weight: 600; color: rgb(var(--st-ink-rgb) / 0.45); font-variant-numeric: tabular-nums; padding-top: 2px; }
+.ln-p h4 { margin: 0 0 4px; font-family: var(--display); font-size: 18px; font-weight: 600; letter-spacing: -0.015em; }
+.ln-b { margin: 0; font-size: 15px; line-height: 1.55; }
+.ln-src { margin: 8px 0 0; font-size: 12.5px; line-height: 1.45; color: rgb(var(--st-ink-rgb) / 0.58); }
+.ln-p.sug .ln-src { font-style: italic; }
+.ln-app { margin: 10px 0 0; font-size: 14px; color: rgb(var(--st-ink-rgb) / 0.7); }
+.ln-go { font-weight: 600; color: var(--st-accent); text-align: left; }
+.ln-go span { display: inline-block; transition: transform .25s var(--spring-ease); }
+.ln-go:hover span { transform: translateX(3px); }
+/* opened from Home on one principle: it glows once, so the eye finds it */
+.ln-p.lit { animation: lnLit 1.6s ease-out; }
+@keyframes lnLit { from { background: color-mix(in srgb, var(--st-accent) 14%, transparent); } to { background: transparent; } }
+@media (prefers-reduced-motion: reduce) { .ln-p.lit { animation: none; } .ln-go span, .ln-jump .chip { transition: none; } }
 @media (max-width: 560px) {
   .hpg-stats b { font-size: 22px; }
   .pg-sv { grid-template-columns: 1fr auto; grid-template-areas: "n sp" "now now" "lean lean"; row-gap: 3px; }
@@ -1973,6 +2004,14 @@
     <div class="rv-h"><div class="rv-title">Your progress</div><div class="rv-meta" id="pgMeta"></div></div>
   </div>
   <div class="rv-scroll"><div class="pg-in" id="pgBody"></div></div>
+</div>
+
+<div class="recv learnv" id="learnv" role="dialog" aria-modal="true" aria-label="How to learn" hidden>
+  <div class="rv-top">
+    <button type="button" class="pbtn" id="lnClose" aria-label="Close">✕</button>
+    <div class="rv-h"><div class="rv-title">How to learn</div><div class="rv-meta" id="lnMeta"></div></div>
+  </div>
+  <div class="rv-scroll"><div class="ln-in" id="lnBody"></div></div>
 </div>
 
 <div class="recv" id="recv" role="dialog" aria-modal="true" aria-label="Recording" hidden>
@@ -6041,7 +6080,7 @@ function initRecs() {
   $('rvSa').addEventListener('change', async e => { const r = REC.cur; r.sa = e.target.value ? +e.target.value : null; r.changed = new Date().toISOString(); await recPut(r); rvAnalyse(); renderRecBackup(); });
   rvPointer(); rvMoreInit(); rvTabsInit(); initChords(); moInit();
   initRecLines();
-  initRecPractice(); initRecVideo(); initSing(); initTakes(); initFree(); initProgress(); initPerformSing(); initRaags();
+  initRecPractice(); initRecVideo(); initSing(); initTakes(); initFree(); initProgress(); initPerformSing(); initRaags(); initLearn();
   initRecSheet(); initRecSync();
   try { REC.details = localStorage.getItem('bandish.rvDetails') === '1'; } catch {}
   $('rvDetails').setAttribute('aria-pressed', !!REC.details);
@@ -10300,6 +10339,125 @@ function initMidi() {
   if (PREFS.midi) navigator.permissions?.query({ name: 'midi' }).then(p => { if (p.state === 'granted') midiConnect(); else midiSay('Turn it off and on to connect'); }).catch(() => midiConnect());
 }
 /* ------------------------------------------------------------------ *
+ *  How to learn (#how-to-learn): principles for learning to sing, in five groups from the ground up. Most are the
+ *  teacher's, with the class they came from; a few are suggested (common Hindustani practice and what's known about
+ *  practicing), marked as such. Each points at the part of the app that helps with it. Home shows one a day.
+ *  A dialog like Progress: ✕, Back and Escape close it, and a link closes it first.
+ * ------------------------------------------------------------------ */
+const PRIN = [
+  { g: 'The ground', note: 'Sa first, then single svaras, before any phrase.', ps: [
+    { t: 'Know your Sa', b: 'Everything is measured from Sa, so settle on it before you sing anything else. A bowed or string instrument trains true pitch better than a keyboard.',
+      src: 'From class · 29 Oct 2025, “Know your Sa”; 27 Jul 2026, on bowed instruments', app: 'Sing freely, with your Sa and a tanpura', go: 'free' },
+    { t: 'Hold one note before you move', sug: 1, b: 'Begin with long, soft held notes: Sa, then Pa, then lower Pa and upper Sa, until each is steady with no wobble. It’s the old habit of Sa sādhanā, and every phrase rests on it.',
+      app: 'Sing freely shows how steady each held svara is', go: 'free' },
+    { t: 'Check your svaras against a reference', b: 'Write a few svaras on chits (N R G), pull one, sing it, then check it on the harmonium. Sing alankārs in ākār (on “aa”) as well as in sargam.',
+      src: 'From class · 29 Oct 2025', app: 'Alankārs, with Sing along marking each note in tune, flat or another svara', go: 'alk' },
+  ] },
+  { g: 'Listening', note: 'Most of learning happens before you open your mouth.', ps: [
+    { t: 'Listen first, then sing', b: 'Listen to a piece many times before singing it. Sometimes only listen.',
+      src: 'From class · 5 Aug 2024, “lots of practicing and listening”; 7 Jul 2025, “sometimes just listen”; 8 Jul 2026, “Listen first”', app: 'Your teacher’s recordings, looped a line at a time', go: 'recs' },
+    { t: 'Imitate now, understand later', b: 'Copy your teacher as closely as you can. It builds a store of phrases that comes back later without trying.',
+      src: 'From class · 7 Oct 2024', app: 'Sing over a class recording', go: 'recs' },
+    { t: 'Record yourself and listen back', b: 'A recording shows what you can’t hear while singing, and it’s where good variations come from.',
+      src: 'From class · 10 Feb 2025, “Listen to the recording → good variations”', app: 'Your takes, read back in Progress', go: 'prog' },
+  ] },
+  { g: 'The rāg', note: 'Its phrases, its rules, and why.', ps: [
+    { t: 'A rāg is its phrases, not its scale', sug: 1, b: 'Āroh and avaroh are the outline. The pakad and the way the rāg moves (where it rests, which note it shows off) make it that rāg. Your classes keep pointing at this: the Ga is “the characteristic” (4 Aug 2025); Ga and Ni āndolit are the speciality of Alhaiyā Bilāval (7 May 2026).',
+      app: 'Each rāg’s page, with its phrases to play', go: 'raags' },
+    { t: 'Keep the rāg’s rules: what it leaves out matters', b: 'Know which notes the rāg doesn’t touch, and which way it bends the ones it does.',
+      src: 'From class · 26 May 2025, Kalāvati: no Re, no Ma, “be careful not to touch them”; 6 Apr 2026, Kāfi: the habit of singing Ga and Ni shuddha, “watch it”', app: 'The rāgs’ āroh, avaroh and pakad', go: 'raags' },
+    { t: 'Ask why, then follow', b: 'Know what you’re doing: question it, then follow the tradition. Bhātkhande set up the system you’re learning, so read his volumes.',
+      src: 'From class · 7 Oct 2024; 24 Feb 2025, on Bhātkhande', app: 'The book pieces come from his Kramik Pustak Mālikā' },
+  ] },
+  { g: 'Learning a piece', note: 'Plain, slow, on the beat, with clear words.', ps: [
+    { t: 'The plain tune first, then the ornaments', b: 'Learn the bandish exactly as given. Add kriyās, meend and variations only once it’s solid.',
+      src: 'From class · 5 Aug 2024, “master the basic tune first, then add ornaments”; 14 Jul 2025, of two ways into “āj”, “the normal one is most important”', app: 'Perform, a line at a time', go: 'perform' },
+    { t: 'Slow is where it gets right', sug: 1, b: 'Practice a little under the real tempo and speed up only once it’s clean. Your notes already do it: 150 bpm, “practice with 140” (14 Jul 2025).',
+      app: 'The tempo in Perform', go: 'perform' },
+    { t: 'Sing on the beat, and land on sam', b: 'Know where the piece starts in the tāl and make each ālāp and sargam arrive on sam. Practice with tablā.',
+      src: 'From class · 27 Jul 2026, “the beauty is to sing on the beat”; 11 Sep 2026, “the ālāp lands on sam”; 8 Jul 2026, “Practice both with tablā”', app: 'The tablā, with × sam and 0 khāli in the notation', go: 'perform' },
+    { t: 'Say the words clearly', b: 'Enunciate. Vary on the open vowels, ā and ī, because they sound good held.',
+      src: 'From class · 18 Aug 2025, “enunciate”; 2 Dec 2024, variations on ā and ī', app: 'The words, as they’re sung', go: 'text' },
+  ] },
+  { g: 'Keeping it', note: 'What you learned stays only if you come back to it.', ps: [
+    { t: 'Go back to old pieces', b: 'Revise and listen to old bandishes, not only the new one.',
+      src: 'From class · 10 Feb 2025; 2 Apr 2025, “Revise the old bandish”', app: 'Revise, in the plan', go: 'plan' },
+    { t: 'A little every day beats a lot once a week', sug: 1, b: 'Short daily practice sticks far better than one long session: both memory and the voice’s control build with spacing. Two pieces daily, the rest in turn.',
+      app: 'The plan, with stars for the two you practice daily', go: 'plan' },
+    { t: 'Sing it from memory before you check', sug: 1, b: 'Try a line without looking, then check the notation. Recalling is what makes it stay; reading along feels easier but sticks less.',
+      app: 'In Perform, look away for a line, then check it', go: 'perform' },
+    { t: 'Don’t force the high notes', sug: 1, b: 'Range grows from a steady middle. If the upper notes strain, sing them softer, or lower your Sa for a while, rather than push. Rest the voice when it’s tired. Your notes of 18 Aug 2025: “High notes do not sound good.”',
+      app: 'Sing freely, at a Sa that’s comfortable', go: 'free' },
+  ] },
+  { g: 'Making your own', note: 'Once a rāg is familiar, sing it your way.', ps: [
+    { t: 'Build your own ālāps: 3–4 in each rāg', b: 'Make up short ālāps within the rāg’s rules and range, and keep the ones you like.',
+      src: 'From class · 24 Feb 2025, “3–4 in each rāg”; 16 Apr 2026, homework: your own ālāp in Kāfi, from Pa up to tār Re–Ga', app: 'Sing freely in the rāg, with its phrases marked as you sing them', go: 'free' },
+    { t: 'A strong base takes time', b: 'Thumris and lighter forms sound easy but rest on years of base. Don’t rush past it.',
+      src: 'From class · 24 Feb 2025' },
+  ] },
+];
+const PRIN_ALL = PRIN.flatMap(gr => gr.ps);
+// one a day for Home, the same all day and the next one tomorrow
+const learnToday = () => { const d = new Date(); return Math.floor((d - d.getTimezoneOffset() * 6e4) / 864e5) % PRIN_ALL.length; };
+const learnFrom = p => p.sug ? 'Suggested · not from class' : p.src;
+
+function learnRender() {
+  let n = 0;
+  const sug = PRIN_ALL.filter(p => p.sug).length;
+  $('lnMeta').textContent = `${PRIN_ALL.length} principles · ${PRIN_ALL.length - sug} from class, ${sug} suggested`;
+  $('lnBody').innerHTML = `
+    <p class="ln-lead">What to keep in mind while you practice, from the ground up. Most are your teacher’s, with the class they came from; the ones marked <i>Suggested</i> aren’t from class yet: they’re common practice, worth asking about.</p>
+    <nav class="ln-jump" aria-label="Groups">${PRIN.map((gr, i) => `<button type="button" class="chip" data-lgrp="${i}">${gr.g}</button>`).join('')}</nav>
+    ${PRIN.map((gr, i) => `<section class="ln-g" id="ln-g${i}"><h3>${gr.g}</h3><p class="ln-gn">${gr.note}</p><ol class="ln-ps">${gr.ps.map(p => { const k = n++; return `
+      <li class="ln-p${p.sug ? ' sug' : ''}" id="ln-${k}"><span class="ln-n">${k + 1}</span><div>
+        <h4>${p.t}</h4><p class="ln-b">${p.b}</p><p class="ln-src">${learnFrom(p)}</p>
+        ${p.app ? `<p class="ln-app">${p.go ? `<button type="button" class="ln-go" data-lgo="${p.go}">${p.app} <span>→</span></button>` : p.app}</p>` : ''}
+      </div></li>`; }).join('')}</ol></section>`).join('')}`;
+}
+function learnOpen(at = null, fromHash = false) {
+  const v = $('learnv');
+  if (!fromHash && location.hash !== '#how-to-learn') history.pushState({ learn: 1 }, '', '#how-to-learn');
+  if (v.hidden) {
+    if (typeof stop === 'function') stop();
+    learnRender(); v.hidden = false; document.body.style.overflow = 'hidden';
+    $('lnClose').focus({ preventScroll: true });
+  }
+  const sc = v.querySelector('.rv-scroll'), el = at == null ? null : $('ln-' + at);
+  if (el) { el.scrollIntoView({ block: 'start' }); el.classList.remove('lit'); void el.offsetWidth; el.classList.add('lit'); } else sc.scrollTop = 0;
+}
+function learnClose(fromHash = false) {
+  const v = $('learnv');
+  if (v.hidden) return;
+  v.hidden = true; document.body.style.overflow = '';
+  if (!fromHash && location.hash === '#how-to-learn') history.back();
+}
+// a link closes the page, then goes (after Back has settled the address)
+function learnGo(go) {
+  learnClose();
+  const piece = () => { const id = B.id; selectBandish(id); location.hash = id; };
+  setTimeout(() => {
+    if (go === 'free') return freeOpen();
+    if (go === 'recs') return recLibOpen();
+    if (go === 'prog') return progOpen();
+    if (go === 'raags') return raagsOpen();
+    if (go === 'plan') return $('riyazBtn').click();
+    if (go === 'alk') { const a = BANDISHES.find(b => b.id === PREFS.lastAlankar) || BANDISHES.find(b => b.kind === 'alankar'); location.hash = a.id; return window.scrollTo(0, 0); }
+    if (go === 'perform') { piece(); return openPerform(); }
+    if (go === 'text') { piece(); return setTimeout(() => $('text')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 120); }
+  }, 60);
+}
+function initLearn() {
+  $('lnClose').addEventListener('click', () => learnClose());
+  $('lnBody').addEventListener('click', e => {
+    const g = e.target.closest('[data-lgrp]');
+    if (g) { $('ln-g' + g.dataset.lgrp).scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
+    const a = e.target.closest('[data-lgo]'); if (a) learnGo(a.dataset.lgo);
+  });
+  document.addEventListener('keydown', e => { if (!$('learnv').hidden && e.key === 'Escape') learnClose(); });
+  addEventListener('hashchange', () => { if (location.hash === '#how-to-learn') learnOpen(null, true); else learnClose(true); });
+  if (HOME_AT === 'how-to-learn') setTimeout(() => { history.replaceState(null, '', '#home'); history.pushState({ learn: 1 }, '', '#how-to-learn'); learnOpen(null, true); });
+}
+/* ------------------------------------------------------------------ *
  *  Your recordings: a page of every recording on this device (Recordings, beside Alankars · Bandishes · Bhajans,
  *  or #recordings), a small library of your own.
  *  - Search (name, piece, rāg, tag), filter (rāg, on a page or not, voice taken out, a tag) and sort.
@@ -10922,27 +11080,7 @@ async function rvVideo(which) {
     if (RVV.bufId !== r.id) { RVV.buf = await ctx.decodeAudioData(await r.audio.arrayBuffer()); RVV.bufId = r.id; }
   } catch (err) { rvVideoUI(null); alert(`Couldn’t read the recording’s sound: ${err.message || err}`); return; }
 
-  const cv = cv0; cv.width = RVV_W * RVV_SCALE; cv.height = RVV_H * RVV_SCALE;
-  const g = cv.getContext('2d'); g.setTransform(RVV_SCALE, 0, 0, RVV_SCALE, 0, 0);
-  const css = stageColours($('recv')), BG = css.getPropertyValue('--st-bg').trim(), ACC = css.getPropertyValue('--st-accent').trim();
-  // the view follows the playhead as it does on screen; the loop's shading stays out of the picture
-  const keep = { t0: V.t0, span: V.span, loop: V.loop, hov: REC.hov };
-  V.loop = null; REC.hov = null; V.span = Math.min(Math.max(6, Math.min(V.span, 14)), Math.max(6, b - a + 1));
-  const frame = t => {
-    if (t < V.t0 + V.span * 0.1 || t > V.t0 + V.span * 0.7) { V.t0 = t - V.span * 0.3; rvClamp(); }
-    g.fillStyle = BG; g.fillRect(0, 0, RVV_W, RVV_H);
-    // a title along the top: the recording, the rāg and Sa, the time
-    g.textBaseline = 'middle'; g.textAlign = 'left';
-    g.fillStyle = STAGE.fg; g.font = '600 22px Inter, sans-serif'; g.fillText(r.title, 28, RVV_TOP / 2);
-    const w0 = g.measureText(r.title).width;
-    g.fillStyle = `rgba(${STAGE.ink}, 0.55)`; g.font = '500 16px Inter, sans-serif';
-    g.fillText(`${A.raag ? 'Rāg ' + A.raag.name + ' · ' : ''}Sa ${rvWest(A.sa, false)}`, 28 + w0 + 16, RVV_TOP / 2 + 1);
-    g.textAlign = 'right'; g.fillStyle = ACC; g.font = '600 18px Inter, sans-serif'; g.fillText(rvFmt(t), RVV_W - 28, RVV_TOP / 2);
-    g.save(); g.translate(0, RVV_TOP);
-    RV_OUT = { g, W: RVV_W, H: RVV_H - RVV_TOP - RVV_KEYS, t, keys: { g, x: 0, y: RVV_H - RVV_TOP - RVV_KEYS, w: RVV_W, h: RVV_KEYS } };
-    try { rvDraw(); } finally { RV_OUT = null; }
-    g.restore();
-  };
+  const { cv, frame, restore } = rvVideoCanvas(r, a, b, cv0);
   frame(a);
 
   // picture and sound into one stream, recorded as it plays; the sound is heard too
@@ -10972,7 +11110,7 @@ async function rvVideo(which) {
   RVV.rec = null; RVV.src = null; RVV.cancelled = false;
   try { src.stop(); } catch {}
   src.disconnect(); stream.getTracks().forEach(t => t.stop());
-  Object.assign(V, { t0: keep.t0, span: keep.span, loop: keep.loop }); REC.hov = keep.hov;
+  restore();
   rvVideoUI(null); rvDraw();
   if (cancelled || !chunks.length) return;
   const type = (rec.mimeType || mime || 'video/webm').split(';')[0], ext = type.includes('mp4') ? 'mp4' : 'webm';
@@ -10984,6 +11122,34 @@ async function rvVideo(which) {
   const url = URL.createObjectURL(file);
   Object.assign(document.createElement('a'), { href: url, download: name }).click();
   setTimeout(() => URL.revokeObjectURL(url), 60000);
+}
+// the 16:9 picture of the open recording at time t, from a to b: frame(t) draws it into cv. The view follows the
+// playhead as it does on screen, with the loop's shading out of the picture; restore() puts the page's view back.
+// Also stepped frame by frame, faster than it plays, by the converter on the Mac (tools/video/graph-video.cjs)
+function rvVideoCanvas(r, a, b, cv = document.createElement('canvas')) {
+  const A = REC.A, V = REC.V;
+  cv.width = RVV_W * RVV_SCALE; cv.height = RVV_H * RVV_SCALE;
+  const g = cv.getContext('2d'); g.setTransform(RVV_SCALE, 0, 0, RVV_SCALE, 0, 0);
+  const css = stageColours($('recv')), BG = css.getPropertyValue('--st-bg').trim(), ACC = css.getPropertyValue('--st-accent').trim();
+  const keep = { t0: V.t0, span: V.span, loop: V.loop, hov: REC.hov };
+  V.loop = null; REC.hov = null; V.span = Math.min(Math.max(6, Math.min(V.span, 14)), Math.max(6, b - a + 1));
+  const frame = t => {
+    if (t < V.t0 + V.span * 0.1 || t > V.t0 + V.span * 0.7) { V.t0 = t - V.span * 0.3; rvClamp(); }
+    g.fillStyle = BG; g.fillRect(0, 0, RVV_W, RVV_H);
+    // a title along the top: the recording, the rāg and Sa, the time
+    g.textBaseline = 'middle'; g.textAlign = 'left';
+    g.fillStyle = STAGE.fg; g.font = '600 22px Inter, sans-serif'; g.fillText(r.title, 28, RVV_TOP / 2);
+    const w0 = g.measureText(r.title).width;
+    g.fillStyle = `rgba(${STAGE.ink}, 0.55)`; g.font = '500 16px Inter, sans-serif';
+    g.fillText(`${A.raag ? 'Rāg ' + A.raag.name + ' · ' : ''}Sa ${rvWest(A.sa, false)}`, 28 + w0 + 16, RVV_TOP / 2 + 1);
+    g.textAlign = 'right'; g.fillStyle = ACC; g.font = '600 18px Inter, sans-serif'; g.fillText(rvFmt(t), RVV_W - 28, RVV_TOP / 2);
+    g.save(); g.translate(0, RVV_TOP);
+    RV_OUT = { g, W: RVV_W, H: RVV_H - RVV_TOP - RVV_KEYS, t, keys: { g, x: 0, y: RVV_H - RVV_TOP - RVV_KEYS, w: RVV_W, h: RVV_KEYS } };
+    try { rvDraw(); } finally { RV_OUT = null; }
+    g.restore();
+  };
+  const restore = () => { Object.assign(V, { t0: keep.t0, span: keep.span, loop: keep.loop }); REC.hov = keep.hov; };
+  return { cv, frame, restore };
 }
 function rvVideoCancel() {
   if (!RVV.rec) return;
@@ -11109,6 +11275,9 @@ function renderHome(enter = true) {
         <svg class="hfree-line" viewBox="0 0 280 44" preserveAspectRatio="none" aria-hidden="true"><path d="M0 34H280M0 20H280M0 6H280" class="g"/><path d="M4 34c18 0 22 0 34-1s10-13 22-13 30 1 46 0 12-14 26-14 34 1 52 0 10 13 24 14 30-1 68 0" class="v"/></svg><span class="hgo">Start →</span></button>
     </section>
 
+    ${(() => { const k = learnToday(), p = PRIN_ALL[k]; return `<section class="hsec hlearn" ${at()}><div class="hsh"><h2>How to learn</h2><button type="button" class="linkbtn" data-hlearn>All ${PRIN_ALL.length}</button></div>
+      <button type="button" class="hpg hlp press" data-hlearn="${k}"><p class="hk">Today’s principle · ${k + 1} of ${PRIN_ALL.length}</p><h3>${p.t}</h3><p class="hm">${p.b}</p><p class="hlp-src">${learnFrom(p)}</p></button></section>`; })()}
+
     <section class="hsec hprog" id="homeProg" ${at()} hidden><div class="hsh"><h2>Your progress</h2><button type="button" class="linkbtn" data-hprog>See all</button></div><div class="hpg press" data-hprog></div></section>
 
     <section class="hsec" id="homeRecsSec" ${at()} hidden><div class="hsh"><h2>Recent recordings</h2><button type="button" class="linkbtn" data-hall>See all</button></div><div class="hrecs" id="homeRecs"></div><p class="hbk" id="homeBk" hidden></p></section>
@@ -11168,10 +11337,11 @@ function initHome() {
   if (pl && typeof IntersectionObserver === 'function') new IntersectionObserver(([e]) => pl.classList.toggle('away', !e.isIntersecting)).observe(pl);
   const el = $('home');
   el.addEventListener('click', e => {
-    const t = e.target.closest('[data-hprog], [data-hfree], [data-hdone], [data-hstart], [data-hplan], [data-hall], [data-hrec], [data-hkind], [data-hraag], [data-hbackup]');
+    const t = e.target.closest('[data-hprog], [data-hlearn], [data-hfree], [data-hdone], [data-hstart], [data-hplan], [data-hall], [data-hrec], [data-hkind], [data-hraag], [data-hbackup]');
     if (!t) return;
     const d = t.dataset;
     if ('hprog' in d) return progOpen();
+    if ('hlearn' in d) return learnOpen(d.hlearn === '' ? null : +d.hlearn);
     if ('hfree' in d) return freeOpen();
     if (d.hdone) return homeTick(d.hdone);
     if (d.hstart) return homeRunStart(d.hstart);
