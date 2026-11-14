@@ -81,6 +81,8 @@
     font-family: var(--sans); font-size: 15px; line-height: 1.5;
     -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
   }
+  /* read by screen readers, not shown */
+  .sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
   .dev { font-family: "Noto Sans Devanagari", "Kohinoor Devanagari", var(--sans); }
   /* Roman (the default): the original script stays out of sight everywhere, titles, rāg names, Perform's lines
      and alankar columns included; Devanagari or Both in the Notation's script setting bring it back */
@@ -517,6 +519,7 @@
   .chip span { color: var(--ink-3); margin-left: 2px; }
   .lrow:hover { background: var(--wash); }
   .lrow.on { background: var(--now); }
+  .lpick { display: flex; flex-direction: column; align-items: flex-start; gap: 1px; width: 100%; text-align: left; border-radius: 8px; }
   .lrow .lt { font-size: 15px; font-weight: 500; color: var(--ink); }
   .lrow .lm { font-size: 12.5px; color: var(--ink-3); }
   .lempty { padding: 24px 12px; margin: 0; font-size: 14px; color: var(--ink-2); }
@@ -1767,7 +1770,7 @@
     <a class="brand" href="#home" aria-label="Sangeet Diary: home"><span class="mark"></span>Sangeet Diary</a>
     <div class="sp"></div>
     <button type="button" class="riyazbtn" id="riyazBtn">Practice<span class="rdot" id="riyazDot"></span></button>
-    <div class="lib"><div class="seg" id="kind"></div><div class="menu kindpick" id="kindPick"></div><div class="menu library" id="picker"></div><div class="menu library" id="libPick" hidden><button type="button" class="trigger" aria-haspopup="dialog"><span class="val"></span><span class="chev"></span></button></div></div>
+    <div class="lib"><div class="seg" id="kind" aria-label="Section"></div><div class="menu kindpick" id="kindPick" aria-label="Kind of piece"></div><div class="menu library" id="picker" aria-label="Piece"></div><div class="menu library" id="libPick" hidden><button type="button" class="trigger" aria-haspopup="dialog"><span class="val"></span><span class="chev"></span></button></div></div>
     <span class="status" id="status" data-s="stopped"><span class="dot"></span><span id="statusTxt">Ready</span></span>
   </div>
 </nav>
@@ -1869,7 +1872,7 @@
   </section>
 
   <section class="sec" id="notation-sec">
-    <div class="sh"><div><div class="num">03</div><h2>Notation <span class="soft" id="taalName"></span></h2></div><div class="seg" id="script"></div></div>
+    <div class="sh"><div><div class="num">03</div><h2>Notation <span class="soft" id="taalName"></span></h2></div><div class="seg" id="script" aria-label="Script"></div></div>
     <div id="notation"></div>
   </section>
 
@@ -1897,7 +1900,7 @@
 
 <div class="sheet" id="riyaz" role="dialog" aria-modal="true" aria-label="Today's practice" hidden>
   <div class="sheet-card">
-    <div class="sheet-top"><h2 class="rz-title" id="rzTitle">Today’s practice</h2><div class="seg" id="rzMode"></div><button type="button" class="sheet-x" id="rzClose" aria-label="Close">×</button></div>
+    <div class="sheet-top"><h2 class="rz-title" id="rzTitle">Today’s practice</h2><div class="seg" id="rzMode" aria-label="Show"></div><button type="button" class="sheet-x" id="rzClose" aria-label="Close">×</button></div>
     <div class="rz-week" id="rzWeek"></div>
     <div class="sheet-body rz-body" id="rzList"></div>
   </div>
@@ -1948,8 +1951,8 @@
 
 <div class="sheet" id="library" role="dialog" aria-modal="true" aria-label="Bandishes by rāg" hidden>
   <div class="sheet-card">
-    <div class="sheet-top"><input type="search" id="libSearch" placeholder="Search rāg, title, words or tāl" aria-label="Search bandishes" autocomplete="off"><button type="button" class="sheet-x" id="libClose" aria-label="Close">×</button></div>
-    <div class="lfilters"><div class="seg" id="libLevel"></div><div class="menu" id="libSource"></div></div>
+    <div class="sheet-top"><input type="search" id="libSearch" placeholder="Search rāg, title, words or tāl" aria-label="Search bandishes" autocomplete="off"><button type="button" class="sheet-x" id="libClose" aria-label="Close">×</button></div><p class="sr" id="libCount" role="status"></p>
+    <div class="lfilters"><div class="seg" id="libLevel" aria-label="Level"></div><div class="menu" id="libSource" aria-label="Source"></div></div>
     <div class="chips" id="libChips"></div>
     <div class="sheet-body" id="libList"></div>
   </div>
@@ -3861,11 +3864,16 @@ function springValue(initial, cfg, apply, rest = 0.01) {
   };
 }
 
-/* Segmented picker with a sliding pill indicator (AnimatedTabs). */
-function Segmented(root, options, value, onChange) {
-  root.setAttribute('role', 'tablist');
-  root.innerHTML = '<span class="ind"></span>' +
-    options.map(o => `<button type="button" role="tab" data-v="${o.value}">${o.label}</button>`).join('');
+/* Segmented picker with a sliding pill indicator (AnimatedTabs). One choice of a few, so to a screen reader it's a
+ * radio group (named by its aria-label or the row's label); with panels (panel: value → element) it's real tabs.
+ * Either way it's one Tab stop: ← → (↑ ↓) move and choose, Home · End go to the ends. */
+function Segmented(root, options, value, onChange, { panel } = {}) {
+  const id = `s${++UI_ID}`, label = uiLabel(root);
+  root.setAttribute('role', panel ? 'tablist' : 'radiogroup');
+  if (label) root.setAttribute('aria-label', label);
+  root.innerHTML = '<span class="ind" aria-hidden="true"></span>' +
+    options.map((o, i) => `<button type="button" role="${panel ? 'tab' : 'radio'}" id="${id}-${i}" data-v="${o.value}">${o.label}</button>`).join('');
+  if (panel) options.forEach((o, i) => { const p = panel(o.value); if (!p) return; p.id ||= `${id}-p${i}`; root.children[i + 1].setAttribute('aria-controls', p.id); p.setAttribute('aria-labelledby', `${id}-${i}`); });
   const ind = root.querySelector('.ind');
   let cur = String(value);
   // the pill stretches slightly while moving or held
@@ -3885,7 +3893,8 @@ function Segmented(root, options, value, onChange) {
       const on = b.dataset.v === cur;
       if (on) active = b;
       b.classList.toggle('on', on);
-      b.setAttribute('aria-selected', on);
+      b.setAttribute(panel ? 'aria-selected' : 'aria-checked', on);
+      b.tabIndex = on ? 0 : -1;
     });
     if (!active || !active.offsetWidth) return;
     xs.set(active.offsetLeft, animate);
@@ -3897,6 +3906,15 @@ function Segmented(root, options, value, onChange) {
     cur = b.dataset.v;
     place(true);
     onChange?.(cur);
+  });
+  root.addEventListener('keydown', e => {
+    const bs = [...root.querySelectorAll('button')], i = bs.indexOf(e.target);
+    if (i < 0) return;
+    const to = { ArrowRight: i + 1, ArrowDown: i + 1, ArrowLeft: i - 1, ArrowUp: i - 1, Home: 0, End: bs.length - 1 }[e.key];
+    if (to == null) return;
+    e.preventDefault(); e.stopPropagation(); // not the page's own keys (a recording's Home, Perform's arrows)
+    const b = bs[(to + bs.length) % bs.length];
+    b.focus(); b.click();
   });
   new ResizeObserver(() => place(false)).observe(root);
   Object.defineProperty(root, 'value', { get: () => cur, set: v => { cur = String(v); place(true); }, configurable: true });
@@ -3938,19 +3956,45 @@ function Press(el, c = 0.045) {
  * closes it (pointerdown, which the iPad sends for a tap anywhere; mousedown it doesn't, on plain space). */
 let MENU_OPEN = null; // the open menu's close, so opening another closes it
 const MENU_TOP_LAYER = typeof HTMLElement === 'function' && 'showPopover' in HTMLElement.prototype;
+let UI_ID = 0; // ids for aria links between a control's parts
+// a control's name: its own aria-label, else the label beside it in a settings row ("Sa", "Instrument")
+const uiLabel = root => root.getAttribute('aria-label') || root.closest('.srow, .opt')?.querySelector('.k')?.firstChild?.textContent.trim() || '';
+/* Keyboard and screen readers follow the WAI-ARIA select-only combobox: focus stays on the trigger, which names the
+ * highlighted option (aria-activedescendant). ↑ ↓ open and move, Home · End jump, Enter or Space choose, Escape
+ * closes, Tab closes and moves on, and typing a letter or two finds an option by its name. */
 function Menu(root, options, value, onChange) {
-  root.innerHTML = `<button type="button" class="trigger" aria-haspopup="listbox" aria-expanded="false"><span class="val"></span><span class="chev">${ICON.updown}</span></button><div class="pop" role="listbox"></div>`;
+  const id = `m${++UI_ID}`, label = uiLabel(root);
+  root.removeAttribute('aria-label'); // the trigger and the list carry the name
+  root.innerHTML = `<span class="sr" id="${id}-l">${label}</span><button type="button" class="trigger" role="combobox" aria-haspopup="listbox" aria-expanded="false" aria-controls="${id}-list" aria-labelledby="${label ? `${id}-l ` : ''}${id}-v"><span class="val" id="${id}-v"></span><span class="chev" aria-hidden="true">${ICON.updown}</span></button><div class="pop" role="listbox" id="${id}-list"${label ? ` aria-label="${label}"` : ''}></div>`;
   const trig = root.querySelector('.trigger'), pop = root.querySelector('.pop');
   if (MENU_TOP_LAYER) pop.popover = 'manual';
-  let opts = options, cur = value, open = false, act = -1;
+  let opts = options, cur = value, open = false, act = -1, typed = '', typedAt = 0;
   const ps = springValue(0, SPRING.responsive, p => {
     pop.style.opacity = Math.min(1, Math.max(0, p * 1.6));
     pop.style.transform = `translateY(${(1 - p) * (pop.classList.contains('up') ? 8 : -8)}px) scale(${0.9 + 0.1 * p})`;
   }, 0.002);
   const renderItems = () => {
     pop.innerHTML = opts.map((o, i) => o.header ? `<div class="mhead" role="presentation">${o.header}</div>` :
-      `<button type="button" role="option" class="item${o.value === cur ? ' sel' : ''}${i === act ? ' act' : ''}" data-i="${i}" aria-selected="${o.value === cur}"><span class="chk">${ICON.check}</span>${o.label}</button>`).join('');
+      `<button type="button" role="option" tabindex="-1" id="${id}-o${i}" class="item${o.value === cur ? ' sel' : ''}${i === act ? ' act' : ''}" data-i="${i}" aria-selected="${o.value === cur}"><span class="chk" aria-hidden="true">${ICON.check}</span>${o.label}</button>`).join('');
     trig.querySelector('.val').textContent = opts.find(o => o.value === cur)?.label ?? '';
+    if (open && act >= 0) trig.setAttribute('aria-activedescendant', `${id}-o${act}`); else trig.removeAttribute('aria-activedescendant');
+  };
+  // the highlight moves to option i and is kept in view inside the list
+  const highlight = i => {
+    if (!opts[i] || opts[i].header) return;
+    act = i; renderItems();
+    const el = pop.querySelector('.act');
+    if (el && (el.offsetTop < pop.scrollTop || el.offsetTop + el.offsetHeight > pop.scrollTop + pop.clientHeight)) pop.scrollTop = el.offsetTop - (pop.clientHeight - el.offsetHeight) / 2;
+  };
+  const items = () => opts.map((o, i) => (o.header ? -1 : i)).filter(i => i >= 0);
+  // typing finds the next option whose name starts with what was typed in the last half second
+  const find = ch => {
+    const now = Date.now();
+    typed = (now - typedAt < 500 ? typed : '') + ch.toLowerCase(); typedAt = now;
+    const name = i => String(opts[i].label).replace(/<[^>]*>/g, '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    const all = items(), from = typed.length > 1 ? act : act + 1;
+    const order = [...all.filter(i => i >= from), ...all.filter(i => i < from)];
+    return order.find(i => name(i).startsWith(typed)) ?? -1;
   };
   // by the trigger, its right edge on the trigger's (kept 8px inside the screen), below it or above
   const place = () => {
@@ -3982,6 +4026,7 @@ function Menu(root, options, value, onChange) {
     if (v) {
       MENU_OPEN?.(); MENU_OPEN = shut;
       act = opts.findIndex(o => o.value === cur);
+      if (act < 0) act = items()[0] ?? -1;
       renderItems();
       pop.style.display = 'block';
       if (MENU_TOP_LAYER && !pop.matches(':popover-open')) pop.showPopover();
@@ -3996,6 +4041,7 @@ function Menu(root, options, value, onChange) {
       window.addEventListener('resize', shut);
     } else {
       if (MENU_OPEN === shut) MENU_OPEN = null;
+      trig.removeAttribute('aria-activedescendant');
       document.removeEventListener('pointerdown', outside, true);
       document.removeEventListener('scroll', scrolled, true);
       window.removeEventListener('resize', shut);
@@ -4020,21 +4066,31 @@ function Menu(root, options, value, onChange) {
   trig.addEventListener('click', () => setOpen(!open));
   pop.addEventListener('click', e => { const b = e.target.closest('.item'); if (b) choose(+b.dataset.i); });
   root.addEventListener('keydown', e => {
+    const letter = e.key.length === 1 && e.key !== ' ' && !e.ctrlKey && !e.metaKey && !e.altKey;
+    // a key the menu uses goes no further (Space would otherwise play the piece, Home seek a recording)
+    const take = () => { e.preventDefault(); e.stopPropagation(); };
     if (!open) {
-      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); setOpen(true); }
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { take(); setOpen(true); }
+      else if (e.key === ' ' && e.target === trig) { take(); swallowUp = true; setOpen(true); }
+      else if (letter) { const i = find(e.key); if (i >= 0) { take(); setOpen(true); highlight(i); } }
       return;
     }
-    if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); setOpen(false); trig.focus(); }
+    if (e.key === 'Escape') { take(); setOpen(false); trig.focus(); }
+    else if (e.key === 'Tab') setOpen(false); // and focus moves on as usual
     else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-      e.preventDefault();
+      take();
       const d = e.key === 'ArrowDown' ? 1 : -1;
       let i = act + d;
       while (opts[i]?.header) i += d;
-      if (opts[i]) act = i;
-      renderItems();
+      highlight(opts[i] ? i : act);
     }
-    else if (e.key === 'Enter' && act >= 0) { e.preventDefault(); choose(act); }
+    else if (e.key === 'Home' || e.key === 'End') { take(); const all = items(); highlight(e.key === 'Home' ? all[0] : all.at(-1)); }
+    else if ((e.key === 'Enter' || e.key === ' ') && act >= 0) { take(); swallowUp = e.key === ' '; choose(act); }
+    else if (letter) { const i = find(e.key); if (i >= 0) { take(); highlight(i); } }
   });
+  // Space acts on keydown; the button would otherwise toggle the list again on keyup
+  let swallowUp = false;
+  root.addEventListener('keyup', e => { if (e.key === ' ' && swallowUp) { e.preventDefault(); swallowUp = false; } });
   Object.defineProperty(root, 'value', { get: () => cur, set: v => { cur = v; renderItems(); }, configurable: true });
   renderItems();
   return { setOptions(o, v) { opts = o; cur = v ?? cur; renderItems(); }, get value() { return cur; } };
@@ -6175,7 +6231,7 @@ function rvTabCounts() {
 }
 function rvTabsInit() {
   try { const t = localStorage.getItem('rv.tab'); if (RV_TABS.some(([k]) => k === t)) RV_TAB = t; } catch {}
-  UI.rvTabs = Segmented($('rvTabs'), RV_TABS.map(([value, label]) => ({ value, label })), RV_TAB, k => rvTab(k));
+  UI.rvTabs = Segmented($('rvTabs'), RV_TABS.map(([value, label]) => ({ value, label })), RV_TAB, k => rvTab(k), { panel: k => document.querySelector(`.rv-tab[data-tab="${k}"]`) });
   rvTab(RV_TAB);
 }
 
@@ -11772,9 +11828,10 @@ const LIB_HOME = 'My notebook';
 const LIBF = { level: 'all', source: 'all' };
 function libRow(b, withRaag) {
   const on = starred().includes(b.id);
-  return `<div class="lrow${b.id === B.id ? ' on' : ''}" data-id="${b.id}" role="button" tabindex="0">
+  // the row's name and details are one button, the star its own beside it (not one inside the other)
+  return `<div class="lrow${b.id === B.id ? ' on' : ''}" data-id="${b.id}"><button type="button" class="lpick"${b.id === B.id ? ' aria-current="true"' : ''}>
     <span class="lt">${b.pick.split(' · ')[1]}</span>
-    <span class="lm">${withRaag ? `${b.kind === 'bhajan' ? 'Bhajan' : b.raagName} · ` : ''}${b.taal === 'free' ? b.taalLabel || 'Free rhythm' : TAALS[b.taal || 'tintal'].name} · <span class="lvl lvl-${pieceLevel(b)[0]}">${pieceLevel(b)}</span> · ${pieceSource(b)}</span>
+    <span class="lm">${withRaag ? `${b.kind === 'bhajan' ? 'Bhajan' : b.raagName} · ` : ''}${b.taal === 'free' ? b.taalLabel || 'Free rhythm' : TAALS[b.taal || 'tintal'].name} · <span class="lvl lvl-${pieceLevel(b)[0]}">${pieceLevel(b)}</span> · ${pieceSource(b)}</span></button>
     <button type="button" class="star${on ? ' on' : ''}" data-star="${b.id}" aria-label="${on ? 'Stop practicing daily' : 'Practice daily'}" aria-pressed="${on}" title="${on ? 'Practicing daily (tap to stop)' : 'Practice daily'}">${on ? '★' : '☆'}</button>
   </div>`;
 }
@@ -11792,6 +11849,9 @@ function renderLibrary() {
       : `<p class="lhint">Tap ☆ on a bandish or bhajan to <b>practice it daily</b>: it joins every day’s plan (${STAR_MAX} at most).</p>`,
     recent.length ? `<section class="lgrp"><div class="lgh"><h3>Recent</h3></div>${recent.map(b => libRow(b, true)).join('')}</section>` : '',
   ].join('');
+  // a search or filter is announced by its count, since the list changes silently
+  const n = groups.reduce((a, g) => a + g.items.length, 0);
+  $('libCount').textContent = filtered ? `${n} bandish${n === 1 ? '' : 'es'}` : '';
   $('libChips').innerHTML = groups.map(g => `<button type="button" class="chip" data-raag="${g.r.id}">${g.r.name} <span>${g.items.length}</span></button>`).join('');
   $('libList').innerHTML = top + (groups.length ? groups.map(g => {
     const open = filtered || libOpen.has(g.r.id);
@@ -11852,7 +11912,6 @@ function initLibrary() {
     const row = e.target.closest('.lrow');
     if (row) pick(row);
   });
-  list.addEventListener('keydown', e => { const row = e.target.closest('.lrow'); if (row && e.key === 'Enter' && e.target === row) pick(row); });
 }
 
 /* ------------------------------------------------------------------ *
