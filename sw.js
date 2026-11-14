@@ -6,7 +6,7 @@
  * - Google Fonts (the stylesheet and the font files): the kept copy at once, refreshed behind it, so the fonts are
  *   there offline too.
  * Nothing else is touched: the helper's /api, audio, uploads and other sites go straight to the network. */
-const VERSION = '32e1a884b8';
+const VERSION = '356d7d19a1';
 const SHELL = 'shell-' + VERSION, FONTS = 'fonts-v1';
 const FILES = ['sangeet-diary.html', 'piano.json', 'book.js', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/maskable-512.png', 'icons/apple-touch-icon.png', 'icons/favicon-32.png'];
 
