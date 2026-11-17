@@ -151,6 +151,27 @@
   .hero .credits { display: flex; flex-wrap: wrap; gap: 6px 28px; margin-top: 18px; font-size: 13px; color: var(--ink-2); }
   .hero .credits b { color: var(--ink); font-weight: 600; }
   .cta { display: flex; gap: 10px; margin-top: 28px; flex-wrap: wrap; }
+  /* the steps of learning a piece: plain rows with hairlines, a tick each, the next one said in ember */
+  .steps-w { margin-top: 30px; max-width: 520px; }
+  .steps-k { margin: 0 0 8px; font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+  .steps { list-style: none; margin: 0; padding: 0; border-bottom: 1px solid var(--line); }
+  .step { display: flex; align-items: center; gap: 6px; border-top: 1px solid var(--line); }
+  .stck { flex: none; width: 44px; height: 52px; margin-left: -7px; display: grid; place-items: center; }
+  .stck i { width: 28px; height: 28px; border-radius: 999px; display: grid; place-items: center; font-style: normal; font-size: 13px; font-weight: 700; color: transparent;
+    box-shadow: inset 0 0 0 1.5px #CFCDC8; transition: background-color .2s, color .2s, box-shadow .2s, transform .2s var(--spring-ease); }
+  .stck:hover i { box-shadow: inset 0 0 0 1.5px var(--ink-3); }
+  .stck:active i { transform: scale(.9); }
+  .step.done .stck i { background: var(--ok); color: #fff; box-shadow: none; }
+  .step.ticked .stck i { animation: hckPop .45s var(--spring-ease); }
+  .stgo { flex: 1; min-width: 0; min-height: 52px; padding: 7px 0; display: grid; align-content: center; gap: 1px; text-align: left; }
+  .stn { font-size: 16px; font-weight: 500; color: var(--ink-2); transition: color .2s; }
+  .stn em { margin-left: 10px; font-style: normal; font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--ember); }
+  .step.now .stn { color: var(--ink); font-weight: 600; }
+  .step.done .stn { color: var(--ink-3); }
+  .stw { font-size: 13px; color: var(--ink-3); }
+  .stgo:hover .stn { color: var(--ink); }
+  @media (prefers-reduced-motion: reduce) { .step.ticked .stck i { animation: none; } }
+  .perform #pfMemory[aria-pressed="true"] { background: rgb(var(--st-ink-rgb) / 0.12); }
   .btn {
     display: inline-flex; align-items: center; gap: 9px; height: 44px; padding: 0 20px; border-radius: 999px;
     font-size: 15px; font-weight: 500; white-space: nowrap; text-decoration: none;
@@ -237,7 +258,18 @@
   .srow .meta { font-family: var(--mono); font-size: 12px; color: var(--ink-2); min-width: 44px; text-align: right; font-variant-numeric: tabular-nums; }
   .srow input[type=range] { max-width: 170px; min-width: 70px; }
   .srow .k { flex-shrink: 0; }
-  .player .hint { font-size: 13px; line-height: 1.7; color: var(--cream-2); margin-top: 18px; }
+  .player .hint { display: flex; align-items: center; justify-content: space-between; gap: 6px 18px; flex-wrap: wrap; font-size: 13px; line-height: 1.7; color: var(--cream-2); margin-top: 18px; }
+  .player .hint .pl-set { min-height: 44px; margin: -8px 0; font-size: 14px; color: var(--cream); text-decoration-color: var(--cream-3); white-space: nowrap; }
+  /* what changes with the piece stays on the page: one quiet card of a row or three, no headings */
+  .settingsCard.quick { display: block; padding: 2px 26px; border-radius: 20px; }
+  .settingsCard.quick .srow { border-top: none; }
+  .settingsCard.quick .srow:not([hidden]) ~ .srow { border-top: 1px solid var(--line); }
+  /* the rest, in the Sound and playback sheet: the same rows without the card round them */
+  .sheet .settingsCard { display: block; margin: 0; border: 0; border-radius: 0; padding: 0 14px 8px; background: none; }
+  .sheet .sgroup h3 { margin-top: 14px; }
+  .sheet .sgroup.more { margin-top: 10px; }
+  /* the notation is the page: straight under the player, not a section far below */
+  #notation-sec { margin-top: 44px; }
   .kbd { font-family: var(--mono); font-size: 11px; border: 1px solid var(--hair); border-radius: 6px; padding: 1px 6px; color: var(--cream-2); }
 
   /* dark variants of the shared components */
@@ -275,6 +307,8 @@
   .nbpages figcaption { font-size: 12px; color: var(--ink-3); margin-top: 4px; }
   .tsub { margin: 0 0 10px; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); }
   .poem + .tsub { margin-top: 22px; }
+  .card.words { margin-bottom: 16px; }
+  .card.words .tsub { margin-top: 0; }
 
   /* ---------- Performance mode ---------- */
   /* the stage (Perform, the recording graph): light by day, dark when the device is in dark mode */
@@ -475,6 +509,7 @@
   .rz-title { flex: 1; }
   .sheet-top .seg { flex: none; }
   .rzh { margin: 14px 4px 2px; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); }
+  .rzm { flex: none; font-size: 12.5px; color: var(--ink-3); font-variant-numeric: tabular-nums; padding-right: 6px; }
   .rzc { flex: none; font-size: 15px; font-weight: 600; color: var(--ok); padding-right: 6px; }
   .rzr { margin: 10px 4px 0; font-size: 13.5px; color: var(--ink-2); }
   .rzstrip.wk { gap: 8px; }
@@ -1149,6 +1184,10 @@
   /* a quiet text action: ink, underlined lightly, the underline darkening on hover (not ember: orange is for what's on) */
   .linkbtn { color: var(--ink); font-weight: 600; text-decoration: underline; text-decoration-color: rgb(38 37 35 / 0.28); text-underline-offset: 3px; transition: text-decoration-color .15s; }
   .linkbtn:hover { text-decoration-color: currentColor; }
+  /* Ask Claude: a quiet action that says what it did in its own place for a moment */
+  .askline { margin: 14px 0 0; }
+  .askbtn { min-height: 44px; font-size: 14px; }
+  .askbtn.said { text-decoration: none; cursor: default; }
   #recBkInfo.warn { color: var(--ember); }
 .recs.drop, #recs.drop { outline: 2px dashed var(--flame); outline-offset: 6px; border-radius: 14px; }
   /* the recording viewer: lines from the notes, marking one */
@@ -1596,6 +1635,17 @@
   .hring .f { stroke: var(--flame); stroke-linecap: round; transition: stroke-dashoffset .7s var(--spring-ease); }
   .hring-n { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--cream-2); font-variant-numeric: tabular-nums; }
   .hring-n b { color: var(--cream); font-weight: 600; font-size: 15px; }
+  /* how long today: three figures to choose from, the chosen one in cream, and what the plan comes to */
+  .hbud { display: flex; align-items: center; margin: 12px 0 -8px -10px; font-size: 14px; color: var(--cream-3); font-variant-numeric: tabular-nums; }
+  .hbud i { font-style: normal; }
+  .hbud-b { min-width: 40px; height: 44px; padding: 0 10px; border-radius: 10px; font: inherit; font-weight: 500; color: var(--cream-2); text-decoration: underline; text-decoration-color: var(--cream-3); text-underline-offset: 3px; transition: color .2s, transform .25s var(--spring-ease); }
+  .hbud-b:hover { color: var(--cream); }
+  .hbud-b:active { transform: scale(.92); }
+  .hbud-b[aria-pressed="true"] { color: var(--cream); font-weight: 700; text-decoration: none; }
+  .hbud-u { margin-left: 2px; }
+  .hbud-t { margin-left: auto; color: var(--cream-2); }
+  .htm { flex: none; font-size: 13px; color: var(--cream-3); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .htrow.done .htm { opacity: .5; }
   .ht-list { margin: 18px 0 4px; display: flex; flex-direction: column; }
   .htrow { display: flex; align-items: center; gap: 14px; padding: 10px 0; border-top: 1px solid var(--hair); }
   .hck { position: relative; width: 30px; height: 30px; border-radius: 999px; flex: none; color: transparent; font-size: 14px; font-weight: 700;
@@ -1622,6 +1672,17 @@
   .hs-next { font-weight: 500; color: rgba(21, 20, 19, 0.55); max-width: 220px; overflow: hidden; text-overflow: ellipsis; }
   .hs-next::before { content: '·'; margin-right: 8px; }
   .hplan { color: var(--cream); text-decoration-color: var(--cream-3); }
+  /* one sentence after practice: the last one above the plan, today's field under it (a line to write on, not a box) */
+  .hnote-last { margin: 16px 0 -4px; font-size: 16px; line-height: 1.45; color: var(--cream); overflow-wrap: anywhere; }
+  .hnote-last .hk, .hnote .hk { display: block; }
+  .hnote-last .hk { margin-bottom: 4px; }
+  .hnote { display: block; margin: 0 0 4px; padding-top: 14px; border-top: 1px solid var(--hair); }
+  .hnote textarea { display: block; width: 100%; box-sizing: border-box; min-height: 44px; margin-top: 2px; padding: 10px 0 9px; font: inherit; font-size: 16px; line-height: 1.45; color: var(--cream); caret-color: var(--core);
+    background: none; border: 0; border-bottom: 1px solid var(--cream-3); border-radius: 0; resize: none; overflow: hidden; outline: none; transition: border-color .2s, box-shadow .2s; }
+  .hnote textarea::placeholder { color: var(--cream-3); }
+  .hnote textarea:focus { border-bottom-color: var(--core); box-shadow: 0 1px 0 var(--core); }
+  .hnote-w { display: block; margin-top: 6px; font-size: 13px; color: var(--cream-3); opacity: 0; transition: opacity .25s; }
+  .hnote textarea:not(:placeholder-shown) ~ .hnote-w { opacity: 1; }
 
   /* continue / latest recording */
   .hgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
@@ -1888,42 +1949,27 @@
         <div class="tl"><span class="label" id="taalLbl">Tintāl</span><span class="tlhint" id="taalHint"></span></div>
         <div class="taalbar" id="taalbar"></div>
       </div>
-      <div class="hint"><span class="kbd">Space</span> play / pause &nbsp;·&nbsp; <span class="kbd">Esc</span> stop &nbsp;·&nbsp; tap a beat in the notation to start from it</div>
+      <div class="hint"><span class="hint-k"><span class="kbd">Space</span> play / pause &nbsp;·&nbsp; <span class="kbd">Esc</span> stop &nbsp;·&nbsp; tap a beat in the notation to start from it</span><button type="button" class="linkbtn pl-set" id="soundBtn" aria-haspopup="dialog">Sound and playback</button></div>
     </div>
 
-    <div class="settingsCard">
+    <div class="settingsCard quick" id="quickSet">
       <div class="sgroup">
-        <h3>Playback</h3>
         <div class="srow" id="raagRow"><div class="k">Rāg<small>Sing the alankar in this rāg's svaras</small></div><div class="v"><div class="menu" id="alkRaag"></div></div></div>
         <div class="srow stack" id="speedRow"><div class="k">Speed<small>1× barābar · 2× dugun · 4× chaugun · All: one after another</small></div><div class="v"><div class="seg" id="speed"></div></div></div>
         <div class="srow"><div class="k">Section<small>What to play</small></div><div class="v"><div class="menu" id="mode"></div></div></div>
-        <div class="srow"><div class="k">Loop<small>Start again at the end</small></div><div class="v"><button class="switch light" id="loop" role="switch" aria-label="Loop"><span class="thumb"></span></button></div></div>
-        <div class="srow stack"><div class="k">Speed up<small>Each time round, a little faster: start slow, end fast</small></div><div class="v"><div class="seg" id="ramp"></div></div></div>
       </div>
-      <div class="sgroup">
-        <h3>Sound</h3>
-        <div class="srow"><div class="k">Instrument</div><div class="v"><div class="menu" id="inst"></div></div></div>
-        <div class="srow stack" id="singRow"><div class="k">Voice sings</div><div class="v"><div class="seg" id="sing"></div></div></div>
-        <div class="srow stack" id="sgRow"><div class="k">Sargam voice<small>Recorded syllables, re-pitched to each note</small></div><div class="v"><div class="seg" id="sgVoice"></div></div></div>
-        <div class="srow"><div class="k">Sa<small>Your tonic (key)</small></div><div class="v"><div class="menu" id="sa"></div></div></div>
-        <div class="srow" id="midiRow"><div class="k">MIDI keyboard<small id="midiSt">Play the harmonium from your keyboard</small></div><div class="v"><button class="switch light" id="midi" role="switch" aria-label="MIDI keyboard"><span class="thumb"></span></button></div></div>
-        <div class="srow stack"><div class="k">Octave</div><div class="v"><div class="seg" id="oct"></div></div></div>
-        <div class="srow" id="melRow"><div class="k">Melody</div><div class="v"><input type="range" class="ios" id="vMel" min="0" max="1" step="0.01" value="0.8" aria-label="Melody volume"></div></div>
-        <div class="srow" id="tabRow"><div class="k">Tabla</div><div class="v"><input type="range" class="ios" id="vTab" min="0" max="1" step="0.01" value="0.6" aria-label="Tabla volume"></div></div>
-      </div>
-      <details class="sgroup more">
-        <summary>Fine adjustments</summary>
-        <div class="srow"><div class="k">Fine tune<small>Nudge Sa between piano keys</small></div><div class="v"><input type="range" class="ios" id="cents" min="-100" max="100" value="0" aria-label="Fine tune"><span class="meta" id="centsLbl">0¢</span></div></div>
-        <div class="srow"><div class="k">Highlight sync<small>If the highlight runs ahead of the sound (Bluetooth headphones)</small></div><div class="v"><input type="range" class="ios" id="sync" min="-150" max="400" step="10" value="0" aria-label="Highlight sync"><span class="meta" id="syncLbl">0 ms</span></div></div>
-      </details>
     </div>
   </section>
 
-  <section class="sec" id="recs">
-    <div class="sh"><div><div class="num">04</div><h2>Recordings</h2></div><button class="btn dark" id="recAdd">+ Add a recording</button></div>
-    <input type="file" id="recFile" accept="audio/*,.m4a,.mp3,.wav,.aac,.ogg,.opus,.caf" multiple hidden>
-    <div class="recs" id="recList"></div>
-    <div class="recbk"><span id="recBkInfo"></span><span class="recbk-a"><button class="linkbtn" id="recSyncGo">Sync…</button><button class="linkbtn" id="recBk">Back up all</button><button class="linkbtn" id="recRs">Restore…</button></span><input type="file" id="recRsFile" hidden></div>
+  <section class="sec" id="notation-sec">
+    <div class="sh"><div><div class="num">03</div><h2>Notation <span class="soft" id="taalName"></span></h2></div><div class="seg" id="script" aria-label="Script"></div></div>
+    <div class="card words" id="wordsCard" hidden><h3 class="tsub" id="wordsHead">Words</h3><div class="poem" id="poemLines"></div></div>
+    <div id="notation"></div>
+  </section>
+
+  <section class="sec" id="text">
+    <div class="sh"><div><div class="num">02</div><h2 id="textTitle">Notes</h2></div></div>
+    <div class="card"><div class="note" id="poemNote"></div><div class="nbpages" id="nbPages"></div></div>
   </section>
 
   <section class="sec" id="learn">
@@ -1951,16 +1997,12 @@
     </div>
   </section>
 
-  <section class="sec" id="text">
-    <div class="sh"><div><div class="num">02</div><h2 id="textTitle">Bandish text</h2></div></div>
-    <div class="card"><h3 class="tsub" id="wordsHead">Words &amp; meaning</h3><div class="poem" id="poemLines"></div><h3 class="tsub" id="notesHead">Notes</h3><div class="note" id="poemNote"></div><div class="nbpages" id="nbPages"></div></div>
+  <section class="sec" id="recs">
+    <div class="sh"><div><div class="num">04</div><h2>Recordings</h2></div><button class="btn dark" id="recAdd">+ Add a recording</button></div>
+    <input type="file" id="recFile" accept="audio/*,.m4a,.mp3,.wav,.aac,.ogg,.opus,.caf" multiple hidden>
+    <div class="recs" id="recList"></div>
+    <div class="recbk"><span id="recBkInfo"></span><span class="recbk-a"><button class="linkbtn" id="recSyncGo">Sync…</button><button class="linkbtn" id="recBk">Back up all</button><button class="linkbtn" id="recRs">Restore…</button></span><input type="file" id="recRsFile" hidden></div>
   </section>
-
-  <section class="sec" id="notation-sec">
-    <div class="sh"><div><div class="num">03</div><h2>Notation <span class="soft" id="taalName"></span></h2></div><div class="seg" id="script" aria-label="Script"></div></div>
-    <div id="notation"></div>
-  </section>
-
 
   <section class="sec" id="raag">
     <div class="sh"><div><div class="num">04</div><h2>About the rāg</h2></div></div>
@@ -1981,6 +2023,38 @@
   </section>
 
   <footer><span id="footer"></span><span>UI components adapted from <a href="https://easyui.site/">EasyUI</a> (MIT License)</span></footer>
+</div>
+
+<!-- Sound and playback: everything about how a piece sounds and repeats, off the page until asked for -->
+<div class="sheet" id="sound" role="dialog" aria-modal="true" aria-label="Sound and playback" hidden>
+  <div class="sheet-card">
+    <div class="sheet-top"><h2 class="rz-title">Sound and playback</h2><button type="button" class="sheet-x" id="soundClose" aria-label="Close">×</button></div>
+    <div class="sheet-body">
+    <div class="settingsCard">
+      <div class="sgroup">
+        <h3>Playback</h3>
+        <div class="srow"><div class="k">Loop<small>Start again at the end</small></div><div class="v"><button class="switch light" id="loop" role="switch" aria-label="Loop"><span class="thumb"></span></button></div></div>
+        <div class="srow stack"><div class="k">Speed up<small>Each time round, a little faster: start slow, end fast</small></div><div class="v"><div class="seg" id="ramp"></div></div></div>
+      </div>
+      <div class="sgroup">
+        <h3>Sound</h3>
+        <div class="srow"><div class="k">Instrument</div><div class="v"><div class="menu" id="inst"></div></div></div>
+        <div class="srow stack" id="singRow"><div class="k">Voice sings</div><div class="v"><div class="seg" id="sing"></div></div></div>
+        <div class="srow stack" id="sgRow"><div class="k">Sargam voice<small>Recorded syllables, re-pitched to each note</small></div><div class="v"><div class="seg" id="sgVoice"></div></div></div>
+        <div class="srow"><div class="k">Sa<small>Your tonic (key)</small></div><div class="v"><div class="menu" id="sa"></div></div></div>
+        <div class="srow" id="midiRow"><div class="k">MIDI keyboard<small id="midiSt">Play the harmonium from your keyboard</small></div><div class="v"><button class="switch light" id="midi" role="switch" aria-label="MIDI keyboard"><span class="thumb"></span></button></div></div>
+        <div class="srow stack"><div class="k">Octave</div><div class="v"><div class="seg" id="oct"></div></div></div>
+        <div class="srow" id="melRow"><div class="k">Melody</div><div class="v"><input type="range" class="ios" id="vMel" min="0" max="1" step="0.01" value="0.8" aria-label="Melody volume"></div></div>
+        <div class="srow" id="tabRow"><div class="k">Tabla</div><div class="v"><input type="range" class="ios" id="vTab" min="0" max="1" step="0.01" value="0.6" aria-label="Tabla volume"></div></div>
+      </div>
+      <details class="sgroup more">
+        <summary>Fine adjustments</summary>
+        <div class="srow"><div class="k">Fine tune<small>Nudge Sa between piano keys</small></div><div class="v"><input type="range" class="ios" id="cents" min="-100" max="100" value="0" aria-label="Fine tune"><span class="meta" id="centsLbl">0¢</span></div></div>
+        <div class="srow"><div class="k">Highlight sync<small>If the highlight runs ahead of the sound (Bluetooth headphones)</small></div><div class="v"><input type="range" class="ios" id="sync" min="-150" max="400" step="10" value="0" aria-label="Highlight sync"><span class="meta" id="syncLbl">0 ms</span></div></div>
+      </details>
+    </div>
+    </div>
+  </div>
 </div>
 
 <div class="sheet" id="riyaz" role="dialog" aria-modal="true" aria-label="Today's practice" hidden>
@@ -2051,6 +2125,7 @@
     <span class="pmodes" role="group" aria-label="Ways to practice">
       <button type="button" class="pbtn pmode rv-sing" id="pfSing" aria-pressed="false" title="Sing along: the mic marks each svara in tune, flat or sharp"><svg class="pico" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg><span class="plbl">Sing</span></button>
       <button type="button" class="pbtn pmode" id="pfPitch" aria-pressed="false" title="See the melody as a line of pitch, with a keyboard"><svg class="pico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 15c2.5 0 3-6 5.5-6s2.5 8 5 8 3-10 7.5-10"/></svg><span class="plbl">Pitch</span></button>
+      <button type="button" class="pbtn pmode" id="pfMemory" aria-pressed="false" title="Sing it from memory: the melody goes quiet, the tabla keeps time"><svg class="pico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V6l10-2v11"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="15.5" r="2.5"/><path d="M3 3l18 18"/></svg><span class="plbl">From memory</span></button>
     </span>
     <button type="button" class="pbtn pexit" id="pfExit" aria-label="Exit performance mode">✕</button>
   </div>
@@ -2599,9 +2674,10 @@ function selectBandish(id) {
   applyRaag(B);
   B.lines.forEach(L => { L.r ??= translit(L.d); }); // lines filled in by the build carry only Devanagari
   B.poem.forEach(p => { if (!p.r && /[ऀ-ॿ]/.test(p.d)) p.r = translit(p.d); }); // so do a bandish's ## Words
-  // every piece shows its words: where they only live in the notation, gather them line by line
-  if (!B.poem.length && !['alankar', 'lesson'].includes(B.kind) && B.lines.some(L => L.r || L.d))
-    B.poem = B.lines.map(L => ({ d: L.d || '', r: L.r || '', e: '' }));
+  // Words are shown once. Written out as whole lines (a ## Words block, a bhajan's verses) they sit above the notation;
+  // where they only live under the svaras, or a notebook page's "words" are just its rows' labels, the notation says them
+  { const letters = t => (t || '').replace(/[^\p{L}\p{M}\p{N}]/gu, ''), rows = letters(B.lines.map(L => (L.r || '') + (L.d || '')).join(''));
+    B.wordsShown = B.poem.length > 0 && !(B.mode === 'notebook' && B.poem.every(p => rows.includes(letters(p.r || p.d)))); }
   $('raagRow').hidden = $('speedRow').hidden = B.kind !== 'alankar';
   SEC = Object.fromEntries(B.sections.map(s => [s.id, s]));
   TAAL = TAALS[B.taal || 'tintal'];
@@ -2719,6 +2795,8 @@ function renderHeader() {
       .map((p, i) => `<a class="btn ${i ? 'line' : 'dark'}" href="#${p.id}">${i ? '' : ICON.play + ' '}Practice ${p.pick.split(' · ')[1]}</a>`).join('')}${
       doneHTML()}</div>` : ''}
     <div class="cta"${B.sections.length ? '' : ' hidden'}><button class="btn dark" data-act="perform">${ICON.play} Perform</button>${doneHTML()}</div>
+    ${stepsHTML(B)}
+    ${B.sections.length && B.kind !== 'lesson' ? (a => (a ? `<p class="askline">${a}</p>` : ''))(askBtn('piece', B.id)) : ''}
     ${B.mine ? myToolsHTML() : ''}</div>
     <aside class="hside" id="hside" hidden></aside>`;
   renderHeroSide();
@@ -2726,18 +2804,17 @@ function renderHeader() {
   $('raagInfo').innerHTML = B.raag.map(([k, v], i) => `<div><span class="k">${k}</span><span class="v">${PHRASE_ROW.test(k) ? phraseHTML(v, 'r' + i, k) : v}</span></div>`).join('') + raagNotebook()
     + (more ? `<a class="rgx-more" href="#raags/${more.id}">All about ${more.name}: hear it, sing it, tell it apart →</a>` : '');
   $('poemNote').innerHTML = B.poemNote;
-  $('wordsHead').hidden = !B.poem.length;
-  $('notesHead').hidden = !B.poemNote;
+  $('wordsCard').hidden = !B.wordsShown;
+  $('wordsHead').textContent = B.poem.some(x => x.e) ? 'Words & meaning' : 'Words';
   $('footer').textContent = B.footer;
   $('nbPages').innerHTML = (B.pages || []).map(p => `<figure><a href="${p.src}" target="_blank" rel="noopener"><img src="${p.src}" alt="Notebook page ${p.n}" loading="lazy"></a><figcaption>Notebook page ${p.n}</figcaption></figure>`).join('');
-  $('text').hidden = !B.poem.length && !B.poemNote && !B.pages?.length;
-  // every page has the same order: words & meaning, notes, then the notation
-  $('textTitle').textContent = B.poem.length ? (B.poemNote ? 'Words & notes' : 'Words & meaning') : 'Notes';
+  // every page has the same order: the notation under the player (its words, where written out, above it), then your notes
+  $('text').hidden = !B.poemNote && !B.pages?.length;
   document.querySelectorAll('.sec:not([hidden]) .num').forEach((el, i) => { el.textContent = String(i + 1).padStart(2, '0'); });
 }
 
 function renderPoem() {
-  $('poemLines').innerHTML = B.poem.map((p, i) => `
+  $('poemLines').innerHTML = !B.wordsShown ? '' : B.poem.map((p, i) => `
     <div class="line">
       <span class="ln">${i + 1}</span>
       <div class="txt">
@@ -2785,6 +2862,8 @@ function rowsHTML(sec, from, to, roman) {
   return html;
 }
 /* notebook pieces: each line shows its words, then the sargam in the phrase groups it was written in */
+// a notebook row with no words yet is labelled "line 1" or "2" in its file: a handle for Line by line, not something to read
+const NB_LABEL = /^(line\s*)?\d+(\s*\(cont\.\))?$/i;
 function nbRowsHTML(sec, r0, r1, roman) {
   let html = '';
   for (let r = r0; r <= r1; r++) {
@@ -2797,7 +2876,7 @@ function nbRowsHTML(sec, r0, r1, roman) {
       notes += `<span class="cell nbn${meendTo.has(c) ? ' nbm' : ''}" data-key="${sec.id}-${r}-${c}" data-sec="${sec.id}" data-row="${r}" data-col="${c}" style="${svColour(sec, r, c)}" title="${title}"><span class="sw${roman ? '' : ' dev'}">${cellSwaraHTML(tok, roman)}</span></span>`;
     });
     notes += '</span>';
-    html += `<div class="row nbline${halves.size ? ' halves' : ''}">${row.words ? `<div class="nbwords">${row.words}</div>` : ''}${row.meaning ? `<div class="nbmeaning">${row.meaning}</div>` : ''}<div class="nbnotes">${notes}</div></div>`;
+    html += `<div class="row nbline${halves.size ? ' halves' : ''}">${row.words && !NB_LABEL.test(row.words) ? `<div class="nbwords">${row.words}</div>` : ''}${row.meaning ? `<div class="nbmeaning">${row.meaning}</div>` : ''}<div class="nbnotes">${notes}</div></div>`;
   }
   return html;
 }
@@ -2987,6 +3066,9 @@ function learnSequence(startLi) {
  *  Audio
  * ------------------------------------------------------------------ */
 let ctx = null;
+// From memory (Perform, 08949-steps.js): the melody is silent for now, whatever its volume is set to
+let MEL_OFF = false;
+const melLevel = () => (MEL_OFF ? 0 : +$('vMel').value);
 let session = null;
 
 /* The audio engine rests when nothing sounds. A running AudioContext keeps the iPad's sound hardware awake even in
@@ -3165,7 +3247,7 @@ function newSession() {
   const wet = gain(inst.wet);
   verb.connect(wet).connect(master);
 
-  const mel = gain(+$('vMel').value); mel.connect(master); mel.connect(verb);
+  const mel = gain(melLevel()); mel.connect(master); mel.connect(verb);
   const tab = gain(+$('vTab').value); tab.connect(master);
 
   const noise = makeNoise(ctx);
@@ -5511,15 +5593,18 @@ function raagIdCore() {
     return pr;
   }
   /* How your teacher actually sings each rāg: recordings whose rāg is known (on a page, or set by hand), read at the
-   * Sa that rāg fits them best (heardOf), added to the rāg's profile (withHeard), weighted so a recording counts
-   * about as much as w beats of written notation per second held. skip: the recording being guessed, which mustn't
-   * teach itself (nor, for a fair test, anything of the same piece: skipPiece) */
+   * Sa that rāg fits them best (heardOf), mixed into the rāg's profile (withHeard) as a share of it: share (a
+   * quarter) at most, reached as the seconds held grow (half of it at `half` seconds), whatever the amount of
+   * notation. The notation stays the main teacher: recordings are few and each is one piece, so past a third they
+   * cost more than they give, and added as raw counts (as before) three clips outweighed Sur Malhār's short
+   * notation while eight barely touched Yaman's (notes/raag-id-experiments.md). skip: the recording being guessed,
+   * which mustn't teach itself (nor, for a fair test, anything of the same piece: skipPiece) */
   function heardOf(trk, P, raagId, opts = {}) {
     const one = P.get(raagId); if (!one) return null;
     const g = identify(trk, new Map([[raagId, one]]), { ...opts, keep: true });
     return g.top[0]?.c || null;
   }
-  function withHeard(P, heard, { w = 1, skip = null, skipPiece = null } = {}) {
+  function withHeard(P, heard, { share = 0.25, half = 60, skip = null, skipPiece = null } = {}) {
     const by = new Map();
     for (const h of heard) {
       if (!h.c || h.id === skip || (skipPiece && h.piece === skipPiece) || !P.has(h.raagId)) continue;
@@ -5530,7 +5615,12 @@ function raagIdCore() {
     const Q = new Map(P);
     for (const [id, acc] of by) {
       const pr = P.get(id), c = blank();
-      for (const f of ['u', 'a', 'b']) for (let k = 0; k < c[f].length; k++) c[f][k] = pr.c[f][k] + w * acc.c[f][k];
+      const secs = acc.c.u.reduce((s, x) => s + x, 0), lam = share * secs / (secs + half);
+      // each part (held, up/down, turns) keeps the notation's total, so the smoothing in finish() means the same
+      for (const f of ['u', 'a', 'b']) {
+        const T = pr.c[f].reduce((s, x) => s + x, 0) || 1, A = acc.c[f].reduce((s, x) => s + x, 0) || 1;
+        for (let k = 0; k < c[f].length; k++) c[f][k] = T * ((1 - lam) * pr.c[f][k] / T + lam * acc.c[f][k] / A);
+      }
       Q.set(id, finish({ ...pr, c, heard: acc.n }));
     }
     return Q;
@@ -5696,15 +5786,16 @@ function raagGuess(r, opts = {}) {
   if (typeof BANDISHES === 'undefined') return null;
   raagSetup();
   // the rāgs as written, and as heard in your other recordings (never this one: it mustn't vouch for itself)
-  const P = RAAG_ID.core.withHeard(RAAG_ID.P, RAAG_ID.heard, { w: RAAG_HEARD_W, skip: r.id });
+  const P = RAAG_ID.core.withHeard(RAAG_ID.P, RAAG_ID.heard, { share: RAAG_HEARD_SHARE, skip: r.id });
   return RAAG_ID.core.identify({ hop: r.hop, hz: r.hz }, P, { sa: r.sa || null, hints: raagHints(r, opts.saNear) });
 }
 /* Learning from your recordings: each one whose rāg is known — on a page with a rāg, or given one (by hand, or in
  * the class notes it was filed with: not one named only by this guess, which would just agree with itself) — read
- * at the Sa its rāg fits best, and added to that rāg as it's heard. A second held counts as a beat of notation
- * (RAAG_HEARD_W: tuned on your teacher's 48; leaving each piece out, right first 34 → 35; with his other takes of
- * the same piece, as in the app, 34 → 38). Cached per recording; run when the recordings are read. */
-const RAAG_HEARD_W = 1;
+ * at the Sa its rāg fits best, and mixed into that rāg as it's heard, up to a quarter of its profile
+ * (RAAG_HEARD_SHARE: on your teacher's 44 with a known rāg, right first 31 from notation alone; leaving each piece
+ * out 36, with his other takes of the same piece, as in the app, 39; as raw counts it was 34 and 38). Cached per
+ * recording; run when the recordings are read. */
+const RAAG_HEARD_SHARE = 0.25;
 function raagLabel(r) {
   const b = typeof BANDISHES !== 'undefined' && BANDISHES.find(x => x.id === r.piece);
   if (b) return b.kind !== 'alankar' && /^thaat-/.test(b.raagId || '') ? '' : b.raagId || '';
@@ -5887,6 +5978,8 @@ function recSettingsMerge(s) {
   if (!s) return 0;
   let n = 0;
   for (const [k, v] of Object.entries(s.prefs || {})) if (!(k in PREFS)) { savePref(k, v); n++; }
+  // the sentences written after practice are joined day by day (noteMerge, 0898-home.js): another device's days aren't lost
+  if (s.prefs?.notes && Object.keys(s.prefs.notes).some(d => !(d in (PREFS.notes || {})))) { savePref('notes', noteMerge(PREFS.notes, s.prefs.notes)); n++; }
   try { for (const k of REC_SETTINGS) if (s.view?.[k] != null && localStorage.getItem(k) == null) { localStorage.setItem(k, s.view[k]); n++; } } catch {}
   return n;
 }
@@ -6378,6 +6471,7 @@ const RV_JI = [0, 112, 204, 316, 386, 498, 590, 702, 814, 884, 996, 1088];
 const RV_SEMI = ['S', 'r', 'R', 'g', 'G', 'm', 'M', 'P', 'd', 'D', 'n', 'N'];
 const rvRef = k => RV_JI[((k % 12) + 12) % 12] + 1200 * Math.floor(k / 12);
 const rvSv = k => RV_SEMI[((k % 12) + 12) % 12];
+const rvRGB = c => { const m = String(c).match(/^#(..)(..)(..)$/i); return m ? `${parseInt(m[1], 16)}, ${parseInt(m[2], 16)}, ${parseInt(m[3], 16)}` : STAGE.ink; }; // a stage colour's numbers, for rgba()
 const rvNear = c => { let b = 0, bd = 1e9; for (let k = Math.floor(c / 100) - 2; k <= Math.floor(c / 100) + 2; k++) { const d = Math.abs(c - rvRef(k)); if (d < bd) { bd = d; b = k; } } return b; };
 const rvFmt = t => `${Math.floor(t / 60)}:${(t % 60).toFixed(1).padStart(4, '0')}`;
 const WEST = ['C', 'C♯', 'D', 'E♭', 'E', 'F', 'F♯', 'G', 'A♭', 'A', 'B♭', 'B'];
@@ -6695,7 +6789,7 @@ function rvDraw() {
   const Y = OUT ? A : rvYRange(), x = t => P.l + (t - V.t0) / V.span * (W - P.l - P.r), y = c => P.t + (Y.hi - c) / (Y.hi - Y.lo) * (Hh - P.t - P.b), t1 = V.t0 + V.span;
   const own = k => !A.raag || A.raag.svaras.includes(((k % 12) + 12) % 12);
   const top = RV_STRIP.top + RV_STRIP.h + 2, bot = Hh - P.b, ct = OUT ? OUT.t : rvNow(), cx = x(ct);
-  const now = A.phrases.findIndex(p => ct >= p.s * H && ct <= p.e * H);
+  const now = A.phrases.findIndex(p => ct >= p.s * H && ct <= p.e * H), F = rvFeel(A, REC.cur);
   /* Layers: everything but the playhead goes to an offscreen canvas, kept while nothing it shows has changed (the
    * view, the range, the loop, the phrase playing, the hover, the lines), so a frame where only the playhead moves
    * is a copy and the playhead. A video draws straight to its own canvas. */
@@ -6809,21 +6903,14 @@ function rvDraw() {
       labels.unshift(() => { if (b - a > 12 && room(lx - 9, ly - 15, unsure ? 24 : 18, 30)) svSay(u.semi, lx, ly, u.conf === 'high' ? 0.9 : u.conf === 'medium' ? 0.7 : 0.4, u.conf === 'high', unsure ? '?' : ''); });
     }
   });
-  // the voice: plain ink, then in a svara's colour where it holds one and the ornament colour where it swings
+  // the voice: a ribbon as wide as it's loud there, in its svara's colour where it holds one and blending between
+  // svaras' colours where it moves, so a meend is one glide through colour (0875)
   const N = A.contour.length, i0 = Math.max(0, Math.floor(V.t0 / H) - 1), i1 = Math.min(N - 1, Math.ceil(t1 / H) + 1), every = Math.max(1, Math.floor((i1 - i0) / (W * 1.5)));
-  const stroke = (s, e, col, w) => {
-    g.strokeStyle = col; g.lineWidth = w; g.lineJoin = g.lineCap = 'round'; g.beginPath();
-    let on = false;
-    for (let i = Math.max(s, i0); i <= Math.min(e, i1); i += every) { const c = A.contour[i]; if (isNaN(c)) { on = false; continue; } if (on) g.lineTo(x(i * H), y(c)); else g.moveTo(x(i * H), y(c)); on = true; }
-    g.stroke();
-  };
-  stroke(i0, i1, ink(0.6), 2); // the voice moving: ink, strong enough to read at arm's length
-  for (const p of A.phrases) {
-    if (p.e * H < V.t0 || p.s * H > t1) continue;
-    for (const u of p.units) {
-      if (u.type === 'note' && u.conf !== 'low') stroke(u.s, u.e, colOf(u.semi), 3);
-      else if (u.type !== 'note') stroke(u.s, u.e, STAGE.orn, 2.25);
-    }
+  g.lineJoin = g.lineCap = 'round';
+  for (let i = i0 + every; i <= i1; i += every) {
+    const c = A.contour[i], c0 = A.contour[i - every]; if (isNaN(c) || isNaN(c0)) continue;
+    g.strokeStyle = F.colour(i); g.lineWidth = F.width(i);
+    g.beginPath(); g.moveTo(x((i - every) * H), y(c0)); g.lineTo(x(i * H), y(c)); g.stroke();
   }
   // a kaṇ: a dot of the svara touched, ringed in the card's colour so it stands off the line
   for (const [i, k] of kans) {
@@ -6846,13 +6933,38 @@ function rvDraw() {
   if (!OUT) { g = G0; g.clearRect(0, 0, W, Hh); g.drawImage(RV_LAYER.plot, 0, 0, W, Hh); moDim(g, W, Hh, A, V); } // the page dims for a rāg phrase (0873)
   // the playhead: the accent, its time in a chip at the top, and a glowing dot on the voice in its svara's colour
   g.save(); g.beginPath(); g.rect(P.l - 30, 0, W - P.l - P.r + 60, Hh); g.clip();
-  const cc = A.contour[Math.round(ct / H)];
+  const cc = A.contour[Math.round(ct / H)], ci = Math.max(0, Math.min(A.contour.length - 1, Math.round(ct / H))), lev = F.L[ci];
+  // while it plays, the phrase being sung keeps the light: the rest of the graph dims as the phrase begins, and
+  // comes back when it has ended (0875)
+  if (OUT || !au.paused) {
+    const gi = F.last(F.gest, ci), gs = gi >= 0 ? F.gest[gi] : null;
+    const k = !gs ? 0 : ci <= gs.e ? Math.min(1, (ct - gs.s * H) / FEEL.veilIn) : Math.exp(-(ct - gs.e * H) / FEEL.veilOut);
+    if (k > 0.02) {
+      const l = P.l, w = W - P.l - P.r, a = Math.max(0, Math.min(1, (x(gs.s * H) - 8 - l) / w)), b = Math.max(0, Math.min(1, (x(gs.e * H) + 8 - l) / w)), e = 28 / w;
+      const lg = g.createLinearGradient(l, 0, l + w, 0), on = `rgba(${rvRGB(CARD)}, ${FEEL.veil * k})`, off = `rgba(${rvRGB(CARD)}, 0)`;
+      lg.addColorStop(0, on); lg.addColorStop(Math.max(0, a - e), on); lg.addColorStop(a, off); lg.addColorStop(b, off); lg.addColorStop(Math.min(1, b + e), on); lg.addColorStop(1, on);
+      g.fillStyle = lg; g.fillRect(l, top, w, bot - top);
+    }
+  }
+  // Sa and Pa ring when they're sung on: their rows light around the playhead, and die away after (0875)
+  for (const st of F.strings) {
+    const r = st.R[ci]; if (r < 0.02) continue;
+    for (let k = Math.ceil(Y.lo / 100) - 1; k <= Math.floor(Y.hi / 100) + 1; k++) {
+      const c = rvRef(k); if (rvSv(k) !== st.sv || c < Y.lo || c > Y.hi) continue;
+      const yy = Math.round(y(c)) + 0.5, half = 50 + 220 * r, a = Math.max(P.l, cx - half), b = Math.min(W - P.r, cx + half * 0.6); if (b - a < 4) continue;
+      for (const [w, al] of [[7 + 7 * r, 0.16], [1 + 1.4 * r, 0.85]]) {
+        const lg = g.createLinearGradient(a, 0, b, 0), m = Math.max(0, Math.min(1, (cx - a) / (b - a)));
+        lg.addColorStop(0, `rgba(${rvRGB(COL[st.sv])}, 0)`); lg.addColorStop(m, `rgba(${rvRGB(COL[st.sv])}, ${al * r})`); lg.addColorStop(1, `rgba(${rvRGB(COL[st.sv])}, 0)`);
+        g.strokeStyle = lg; g.lineWidth = w; g.lineCap = 'butt'; g.beginPath(); g.moveTo(a, yy); g.lineTo(b, yy); g.stroke();
+      }
+    }
+  }
   // the held note sounding now: its stretch of the line glows in its svara's colour
   {
-    const ci = Math.round(ct / H), ph = now >= 0 ? A.phrases[now] : null, un = ph?.units.find(u => u.type === 'note' && u.conf !== 'low' && ci >= u.s && ci < u.e);
+    const ph = now >= 0 ? A.phrases[now] : null, un = ph?.units.find(u => u.type === 'note' && u.conf !== 'low' && ci >= u.s && ci < u.e);
     if (un) {
       g.save(); g.beginPath(); g.rect(P.l, top, W - P.l - P.r, bot - top); g.clip();
-      g.strokeStyle = colOf(un.semi); g.lineWidth = 3.5; g.lineJoin = g.lineCap = 'round'; g.shadowColor = g.strokeStyle; g.shadowBlur = 10; g.beginPath();
+      g.strokeStyle = colOf(un.semi); g.lineWidth = F.width(ci) + 0.6; g.lineJoin = g.lineCap = 'round'; g.shadowColor = g.strokeStyle; g.shadowBlur = 6 + 10 * lev; g.beginPath();
       const ev = Math.max(1, Math.floor((un.e - un.s) / (W * 1.5) * 1)); let on = false;
       for (let i = Math.max(un.s, Math.floor(V.t0 / H)); i <= Math.min(un.e, Math.ceil(t1 / H)); i += ev) { const c = A.contour[i]; if (isNaN(c)) { on = false; continue; } if (on) g.lineTo(x(i * H), y(c)); else g.moveTo(x(i * H), y(c)); on = true; }
       g.stroke(); g.restore();
@@ -6865,9 +6977,27 @@ function rvDraw() {
     const s = rvFmt(ct), f = '600 11px Inter, sans-serif', w = tw(s, f) + 14;
     g.beginPath(); g.roundRect(cx - w / 2, 3, w, 18, 9); g.fill();
     g.fillStyle = STAGE.bg; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(s, cx, 12.5);
+    // a hold's halo: it opens around the voice for as long as the svara is held, as bright as it's loud, and lets go
+    // when the voice leaves it (0875)
+    { const hi = F.last(F.holds, ci), h = hi >= 0 ? F.holds[hi] : null;
+      if (h) {
+        const dur = (h.e - h.s) * H, after = ct - h.e * H, letGo = Math.min(FEEL.haloLetMax, FEEL.haloLet + dur / 2);
+        let j = Math.min(ci, h.e - 1); while (j > h.s && isNaN(A.contour[j])) j--;
+        if (after <= letGo && !isNaN(A.contour[j]) && Math.abs(A.contour[j] - rvRef(h.semi)) < 120) {
+          const e = after <= 0 ? 0 : after / letGo, rad = (FEEL.haloMin + FEEL.haloGrow * (1 - Math.exp(-Math.min(ct - h.s * H, dur) / FEEL.haloTime))) * (1 + 0.35 * (1 - (1 - e) * (1 - e)));
+          const hx = x(j * H), hy = y(A.contour[j]), al = (0.35 + 0.65 * F.L[j]) * (1 - e), c = rvRGB(colOf(h.semi));
+          if (hy > top + 4) {
+            const rg = g.createRadialGradient(hx, hy, rad * 0.2, hx, hy, rad);
+            rg.addColorStop(0, `rgba(${c}, 0)`); rg.addColorStop(1, `rgba(${c}, ${0.16 * al})`);
+            g.beginPath(); g.arc(hx, hy, rad, 0, 7); g.fillStyle = rg; g.fill();
+            g.strokeStyle = `rgba(${c}, ${0.6 * al})`; g.lineWidth = 1 + lev; g.stroke();
+          }
+        }
+      }
+    }
     if (!isNaN(cc) && y(cc) > top + 4) {
-      g.fillStyle = colOf(rvNear(cc)); g.shadowColor = g.fillStyle; g.shadowBlur = 14;
-      g.beginPath(); g.arc(cx, y(cc), 6, 0, 7); g.fill(); g.shadowBlur = 0;
+      g.fillStyle = colOf(rvNear(cc)); g.shadowColor = g.fillStyle; g.shadowBlur = 8 + 14 * lev; // the dot as big and bright as the voice is loud
+      g.beginPath(); g.arc(cx, y(cc), 4.2 + 3.2 * lev, 0, 7); g.fill(); g.shadowBlur = 0;
       g.strokeStyle = CARD; g.lineWidth = 2; g.stroke();
     }
   }
@@ -8274,6 +8404,69 @@ function moFrame(E) {
   if ((MO.cur || MO.stars.length || MO.dim) && au.paused && !MO.raf) MO.raf = requestAnimationFrame(() => { MO.raf = 0; rvDraw(); });
 }
 /* ------------------------------------------------------------------ *
+ *  The feel of a recording's sound, for the graph (rvDraw): read once from the pitch, the level and the held
+ *  svaras, every 10 ms, so the line can be as wide as the voice is loud, a glide can pass through its svaras'
+ *  colours, and the playhead can show a hold opening and Sa and Pa ringing. Nothing here runs on a timer: it is
+ *  all a function of where the recording is. The video look (tools/video/flow.js) draws from the same ideas;
+ *  notes/video-feel/README.md says what is tied to what.
+ * ------------------------------------------------------------------ */
+const FEEL = {
+  levelCurve: 0.9, levelFloor: 0.05, levelSmooth: 0.04, // level: 0 at this percentile of the sung moments, 1 at the 95th
+  wMin: 1.1, wMax: 4.6, heldW: 1.15, glideW: 0.8,       // the line's width at the softest and the loudest (px)
+  phraseGap: 0.6, veil: 0.5, veilIn: 0.25, veilOut: 0.6, // phrases joined across shorter rests; how far the rest of the graph dims, and how fast
+  haloMin: 7, haloGrow: 26, haloTime: 1.4, haloLet: 0.3, haloLetMax: 0.9, // the hold's halo: min + grow × (1 − e^(−held/time))
+  strings: [[0, 'S'], [700, 'P']], near: 40, ringUp: 0.12, ringDown: 1.6, // Sa and Pa ring when sung within `near` cents
+};
+function rvFeel(A, r) {
+  if (A.feel) return A.feel;
+  const K = FEEL, H = A.hop, C = A.contour, N = C.length, RMS = r?.rms || [], { COL } = rvColours();
+  const rgb = c => { const m = String(c).match(/^#(..)(..)(..)$/i); return m ? [parseInt(m[1], 16), parseInt(m[2], 16), parseInt(m[3], 16)] : [150, 150, 150]; };
+  // held svaras frame by frame (the ones the analysis is sure of), and holds: the same svara retaken within 150 ms is one
+  const held = new Int16Array(N).fill(-999), holds = [];
+  for (const p of A.phrases) for (const u of p.units) {
+    if (u.type !== 'note' || u.conf === 'low') continue;
+    for (let i = u.s; i < Math.min(N, u.e); i++) held[i] = u.semi;
+    const q = holds.at(-1);
+    if (q && q.semi === u.semi && u.s - q.e <= 15) q.e = u.e; else holds.push({ semi: u.semi, s: u.s, e: u.e });
+  }
+  // level, 0 to 1 against the recording's own soft and loud, where the voice sounds
+  const L = new Float32Array(N);
+  { const v = []; for (let i = 0; i < N; i++) if (!isNaN(C[i])) v.push(RMS[i] || 0);
+    v.sort((a, b) => a - b);
+    const ref = v[Math.floor(v.length * 0.95)] || 1, fl = Math.min(ref * 0.7, v[Math.floor(v.length * K.levelFloor)] || 0) * 0.8, w = Math.max(1, Math.round(K.levelSmooth / H));
+    let sum = 0;
+    const raw = i => RMS.length ? Math.pow(Math.max(0, Math.min(1, ((RMS[i] || 0) - fl) / (ref - fl))), K.levelCurve) : 0.5;
+    for (let i = 0; i < N + w; i++) { if (i < N) sum += raw(i); if (i >= 2 * w + 1) sum -= raw(i - 2 * w - 1); const c = i - w; if (c >= 0 && c < N) L[c] = sum / (Math.min(N - 1, c + w) - Math.max(0, c - w) + 1); }
+  }
+  // phrases as gestures: joined across rests too short to be a breath
+  const gest = [];
+  for (const p of A.phrases) { const q = gest.at(-1); if (q && (p.s - q.e) * H < K.phraseGap) q.e = p.e; else gest.push({ s: p.s, e: p.e }); }
+  // how much each string rings: fed by singing on it (any octave) as loud as it's sung, dying away after
+  const strings = K.strings.map(([off, sv]) => {
+    const R = new Float32Array(N), up = 1 - Math.exp(-H / K.ringUp), down = Math.exp(-H / K.ringDown);
+    let x = 0;
+    for (let i = 0; i < N; i++) {
+      let f = 0;
+      if (!isNaN(C[i])) { const d = Math.abs(((C[i] - off) % 1200 + 1800) % 1200 - 600); f = Math.max(0, 1 - d / K.near) * L[i]; }
+      x = f > x ? x + (f - x) * up : x * down; R[i] = x;
+    }
+    return { sv, R };
+  });
+  const RGB = {}; for (const k in COL) RGB[k] = rgb(COL[k]);
+  // the last of a sorted list (by .s) that has begun by frame i
+  const last = (list, i) => { let a = 0, b = list.length - 1, at = -1; while (a <= b) { const m = (a + b) >> 1; if (list[m].s <= i) { at = m; a = m + 1; } else b = m - 1; } return at; };
+  return A.feel = {
+    held, holds, L, gest, strings, last,
+    width: i => (K.wMin + (K.wMax - K.wMin) * L[i]) * (held[i] !== -999 ? K.heldW : K.glideW),
+    // a held svara's own colour; otherwise blended between the svaras the pitch lies between
+    colour: i => {
+      if (held[i] !== -999) return COL[ROM[rvSv(held[i])]];
+      const k = Math.floor(C[i] / 100), f0 = C[i] / 100 - k, f = f0 * f0 * (3 - 2 * f0), a = RGB[ROM[rvSv(k)]], b = RGB[ROM[rvSv(k + 1)]];
+      return `rgb(${Math.round(a[0] + (b[0] - a[0]) * f)},${Math.round(a[1] + (b[1] - a[1]) * f)},${Math.round(a[2] + (b[2] - a[2]) * f)})`;
+    },
+  };
+}
+/* ------------------------------------------------------------------ *
  *  Lines from your notes, on the recording's graph
  *  Each written line (a row of a section in the piece's notation) can be marked on a recording once: pick it
  *  under the graph, then drag over where it's sung or tap its phrase. From then on it sits in a strip along the
@@ -9447,6 +9640,7 @@ async function freeStop() {
   const t = { id: 'tk-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), rec: 'free', kind: 'free', at: FREE.at, sa: freeSa(), raagId: r?.id || '',
     hop: FREE.hop, l0: 0, line: L, rate: TAKE_RATE, t0: FREE.a0 || 0, speed: 1, audio, sung: sung || FREE.n / TAKE_RATE, ...st };
   try { await takePut(t); } catch { el.innerHTML = 'Couldn’t keep this take (is the device full?)'; el.hidden = false; return; }
+  planFreeTake(t.sung); // today's plan: Sa and breath, then your own ālāp (09-controls.js)
   el.innerHTML = `Kept: ${rvFmt(FREE.n / TAKE_RATE).replace(/\.\d$/, '')}${st.held ? `, in tune ${st.tune}% of the time you held a note` : ''} <button type="button" class="pbtn" data-ftake="${t.id}">▶ Listen back</button>`;
   el.hidden = false; el.classList.remove('gone', 'in');
   freeTakes();
@@ -10426,7 +10620,7 @@ function rgxPageHTML(r) {
       ${pieces.length ? `<div class="rgx-list"><h4>Pieces <span>${pieces.length}</span></h4>${pShown.map(b => `<a class="rgx-li" href="#${b.id}">${homeEsc(b.pick.split(' · ')[1] || b.pick)}<span class="m">${b.kind === 'bhajan' ? 'Bhajan' : ''}</span></a>`).join('')}${pieces.length > pShown.length ? rgxMoreBtn('pieces', `All ${pieces.length}`) : ''}</div>` : ''}
       ${recs.length ? `<div class="rgx-list"><h4>Recordings <span>${recs.length}</span></h4>${rShown.map(x => `<button type="button" class="rgx-li" data-rgx="rec" data-id="${x.id}">${homeEsc(recName(x))}<span class="m">${day(x)}</span></button>`).join('')}${recs.length > rShown.length ? (RGX.more.recs ? `<p class="rgx-note">and ${recs.length - rShown.length} more on the Recordings page</p>` : rgxMoreBtn('recs', `All ${recs.length}`)) : ''}</div>` : ''}</div>`
       : `<p class="rgx-note">Nothing yet. When you learn a piece or record a class in ${name}, set its rāg and it shows here, and <i>Sounds like</i> learns how your teacher sings it.</p>`}
-      <div class="rgx-go"><button type="button" class="btn dark" data-rgx="free" data-id="${r.id}">Sing freely in ${name}</button><button type="button" class="btn line" data-rgx="alk" data-id="${r.id}">Alankars in ${name}</button></div></section>
+      <div class="rgx-go"><button type="button" class="btn dark" data-rgx="free" data-id="${r.id}">Sing freely in ${name}</button><button type="button" class="btn line" data-rgx="alk" data-id="${r.id}">Alankars in ${name}</button>${askBtn('raag', r.id, `Ask Claude about ${name}`)}</div></section>
     ${near.length ? `<section class="rgx-sec"><h3>Telling it apart</h3><div class="rgx-near">${near.map(x =>
       `<a class="rgx-nr press" href="#raags/${x.o.id}"><b>${homeEsc(x.o.name)}</b><span class="rgx-two">${rgxStrip(r, { mark: x.only })}${rgxStrip(x.o, { mark: x.theirs })}</span><p>${homeEsc(rgxApartShort(r, x))}</p></a>`).join('')}</div>
       <p class="rgx-note">Top: ${name}. Below: the other rāg. A ring marks a svara only one of them has.</p></section>` : ''}`;
@@ -10694,7 +10888,7 @@ function initLearn() {
  * ------------------------------------------------------------------ */
 const HOWTO = [
   { g: 'Start here', note: 'Your Sa, a warm-up, and a tanpura.', ps: [
-    { t: 'Set your Sa', b: 'Everything plays and is judged from your Sa. Open any piece and find <b>Sound → Sa</b> under the player; pick the key you sing in. It’s kept for every piece.' },
+    { t: 'Set your Sa', b: 'Everything plays and is judged from your Sa. Open any piece, tap <b>Sound and playback</b> on the player and find <b>Sa</b>; pick the key you sing in. It’s kept for every piece.' },
     { t: 'Warm up on an alankar', b: '<b>Alankars</b> in the top bar: short patterns of svaras, sung in any rāg. They start slow, at 60 BPM. Play one, sing with it, then try it at 2× and 4×.', app: 'Open an alankar', go: 'alk' },
     { t: 'Sing freely', b: 'Just you, your Sa and a tanpura. Each svara you hold shows up as you sing it: in tune or not, how steady, for how long.', app: 'Sing freely', go: 'free' },
   ] },
@@ -10766,6 +10960,171 @@ function initHowto() {
   addEventListener('hashchange', () => { if (location.hash === '#how-to-use') howtoOpen(true); else howtoClose(true); });
   if (HOME_AT === 'how-to-use') setTimeout(() => { history.replaceState(null, '', '#home'); history.pushState({ howto: 1 }, '', '#how-to-use'); howtoOpen(true); });
 }
+/* ------------------------------------------------------------------ *
+ *  Ask Claude: one tap writes the whole message for your practice companion and copies it, ready to paste.
+ *  The message is your teaching prompt (content/teaching-prompt.md, carried in your private file as MINE.ask,
+ *  since it quotes your teacher) with "What I've learned" filled in from the pieces here today, then the thing
+ *  you're asking about: a piece with its notation, a rāg with what the app knows of it, or today (how long you
+ *  have, this week's piece, the last class's note, the week so far, the sentence you wrote last time).
+ *  Nothing is sent anywhere: it goes to the clipboard, and you paste it into Claude yourself. Without the
+ *  private file (the shared site) there is no prompt and the action isn't shown.
+ * ------------------------------------------------------------------ */
+/* ---- the message: pure, tested (tests/ask.test.cjs) ---- */
+// a svara as the app keeps it (g, m, M, S', N.) in the notebook's sargam (G_, M, M#, S', N,), kaṇ and all
+const ASK_SV = { S: 'S', R: 'R', r: 'R_', G: 'G', g: 'G_', m: 'M', M: 'M#', P: 'P', D: 'D', d: 'D_', N: 'N', n: 'N_' };
+const askTok = t => String(t).replace(/([SRGMPDNrgmdn])([.']*)/g, (_, c, o) => ASK_SV[c] + o.replace(/\./g, ','));
+// a row of a piece as a line of that sargam: a notebook row keeps its groups and meends, a row in a tāl is a beat a word
+function askRow(row) {
+  if (!row.groups?.length) return row.n.map(askTok).join(' ');
+  const meend = new Set((row.arcs || []).map(a => a[1]));
+  return row.n.map((t, i) => (i && row.groups.includes(i) ? ' ' : '') + (meend.has(i) ? '~' : '') + askTok(t)).join('');
+}
+function askNotation(b) {
+  return b.sections.map(sec => `## ${sec.name}\n` + sec.rows.map(row => {
+    const words = row.groups?.length ? (/^line \d+$/i.test(row.words || '') ? '' : row.words || '') : (row.l || []).some(x => x && x !== 'ऽ') ? row.l.map(x => x || '·').join(' ') : '';
+    return (words ? words + '\n' : '') + askRow(row);
+  }).join('\n')).join('\n\n');
+}
+// the app's display text for a phrase (komal underlined or in lower case, m for shuddha Ma, a dot above for tār and
+// below for mandra, a stroke for tīvra) in that sargam
+function askPlain(html) {
+  return String(html || '').normalize('NFD')
+    .replace(/<u>\s*([SRGMPDNrgdn])([\u0307\u0323]*)\s*<\/u>/g, (_, L, m) => L.toUpperCase() + '_' + m)
+    .replace(/(?<![A-Za-z\u0300-\u036f'’])([rgdnm])(?![A-Za-z\u0300-\u036f'’_])/g, (_, L) => (L === 'm' ? 'M' : L.toUpperCase() + '_'))
+    .replace(/(?<![A-Za-z\u0300-\u036f])([SRGMPDN]_?)([\u0307\u0323\u030d]+)(?![a-z])/g, (_, L, m) => L.replace('_', '') + (m.includes('\u030d') ? '#' : '') + (L.endsWith('_') ? '_' : '') + (m.includes('\u0307') ? "'" : '') + (m.includes('\u0323') ? ',' : ''))
+    .replace(/<br\s*\/?>/g, ' ').replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&nbsp;/g, ' ')
+    .replace(/\s+/g, ' ').trim().normalize('NFC');
+}
+const askName = b => (b.pick || '').split(' · ').slice(1).join(' · ') || b.pick || b.id;
+const askGap = (a, b) => Math.round((new Date(b + 'T12:00') - new Date(a + 'T12:00')) / 864e5);
+const askAgo = n => n === 0 ? 'today' : n === 1 ? 'yesterday' : `${n} days ago`;
+const askMine = S => S.pieces.filter(b => ['bandish', 'bhajan'].includes(b.kind) && (S.mine.has(b.id) || b.lessons?.length));
+const askFacts = r => (r?.info || []).map(([k, v]) => `${k}: ${askPlain(v)}`).join(' · ');
+// "What I've learned": each rāg with a piece of yours, most pieces first, with what the app knows of it
+function askLearned(S) {
+  const by = new Map(), loose = [];
+  for (const b of askMine(S)) { if (b.raagId && S.raags.some(r => r.id === b.raagId)) by.set(b.raagId, [...(by.get(b.raagId) || []), b]); else loose.push(b); }
+  const rows = [...by].sort((a, b) => b[1].length - a[1].length).map(([id, ps]) => {
+    const r = S.raags.find(x => x.id === id);
+    return `- **${r.name}** · ${askFacts(r)}\n  Pieces: ${ps.map(b => askName(b) + (b.kind === 'bhajan' ? ' (bhajan)' : '')).join('; ')}`;
+  });
+  return `Rāgs I have pieces in, with those pieces (from my practice app, as of ${S.today}):\n\n${rows.join('\n')}`
+    + (loose.length ? `\n\nBhajans and pads with no rāg set: ${loose.map(askName).join('; ')}` : '');
+}
+function askPiece(S, b) {
+  const taal = b.mode === 'notebook' || !b.taal || b.taal === 'free' ? '' : S.taals?.[b.taal]?.name || b.taal, note = askPlain(b.poemNote);
+  const words = (b.poem || []).map(p => p.r).filter(w => w && !/^line \d+$/i.test(w));
+  const book = /^Kramik Pustak/.test(b.source || ''), last = S.last[b.id];
+  return ['## What I\'m working on now', '',
+    `**${askName(b)}** · ${b.kind === 'alankar' ? `an alankar, here in ${b.raagName || 'Bilāval'}` : b.kind === 'bhajan' && !b.raagId ? 'a bhajan' : `Rāg ${b.raagName}`}${taal ? ` · ${taal}` : ''} · ${b.bpm} BPM in my app`,
+    note ? `My note on it: ${note}` : '', last ? `Last practiced: ${askAgo(askGap(last, S.today))}` : 'Not practiced in the app yet.',
+    words.length ? `\nWords:\n${words.join('\n')}` : '', '',
+    `Its notation as I have it (${book ? 'from Kramik Pustak Mālikā' : 'my teacher\'s version, from my notebook'}; one pulse per note, - is a hold):`, '', askNotation(b), '',
+    b.kind === 'alankar' ? 'Help me with this alankar the way "Alankars into rāgs" says.' : 'Help me with this piece the way "Getting better with bandishes" says. Start with the plain tune.'].join('\n').replace(/\n{3,}/g, '\n\n');
+}
+function askRaag(S, r) {
+  const ps = askMine(S).filter(b => b.raagId === r.id);
+  return ['## What I\'m asking about', '', `Rāg **${r.name}**.`, `What my app has on it: ${askFacts(r)}`,
+    ps.length ? `My pieces in it: ${ps.map(askName).join('; ')}` : 'I haven\'t learned a piece in it yet.', '',
+    'Teach me this rāg the way "Understanding a rāg" says, then give me alankars in it.'].join('\n');
+}
+function askToday(S) {
+  const byId = id => S.pieces.find(b => b.id === id), week = S.plan.find(p => p.part === 'week'), wb = week && byId(week.id);
+  const cls = S.pieces.filter(b => b.kind === 'lesson').sort((a, b) => b.date.localeCompare(a.date))[0];
+  const n = {}; for (const [d, ids] of Object.entries(S.done || {})) if (askGap(d, S.today) >= 0 && askGap(d, S.today) < 7) for (const id of ids) if (byId(id)) n[id] = (n[id] || 0) + 1;
+  const did = Object.entries(n).sort((a, b) => b[1] - a[1]).map(([id, k]) => `${askName(byId(id))}${k > 1 ? ` (${k}×)` : ''}`);
+  const sung = {}; for (const b of askMine(S)) if (b.raagId) sung[b.raagName] = Math.min(sung[b.raagName] ?? 9999, S.last[b.id] ? askGap(S.last[b.id], S.today) : 9999);
+  const stale = Object.entries(sung).filter(([, d]) => d >= 14 && d < 9999).sort((a, b) => b[1] - a[1]).map(([name, d]) => `${name} (${d} days)`); // only rāgs sung here before
+  const note = Object.keys(S.notes || {}).filter(d => d < S.today).sort().pop();
+  return ['## Today', '', `Today I have ${S.budget} minutes.`,
+    wb ? `This week's piece: ${askName(wb)}${wb.raagName ? ` (Rāg ${wb.raagName})` : ''}.` : '',
+    cls ? `My last class (${cls.date}${cls.short ? `, ${cls.short}` : ''}): ${askPlain(cls.poemNote) || 'no note written.'}` : '',
+    `Practiced in the last 7 days: ${did.length ? did.join('; ') : 'nothing ticked yet'}.`,
+    stale.length ? `Rāgs I haven't sung for two weeks or more: ${stale.join('; ')}.` : '',
+    note ? `After practice on ${note} I wrote: "${S.notes[note]}"` : '', '',
+    'Plan today\'s practice the way "A day\'s practice" says.'].filter((x, i, a) => x !== '' || a[i - 1] !== '').join('\n').replace(/\n{3,}/g, '\n\n');
+}
+// the whole message, or null when there's no prompt (the shared site) or nothing by that name
+function askText(S, kind, id) {
+  if (!S.prompt) return null;
+  const thing = kind === 'piece' ? S.pieces.find(b => b.id === id && b.sections?.length) : kind === 'raag' ? S.raags.find(r => r.id === id) : kind === 'today' ? S : null;
+  if (!thing) return null;
+  return S.prompt.replace('{{learned}}', () => askLearned(S)).trim() + '\n\n---\n\n' + (kind === 'piece' ? askPiece(S, thing) : kind === 'raag' ? askRaag(S, thing) : askToday(S)) + '\n';
+}
+/* ---- end the message ---- */
+
+const ASK_ON = !!(typeof MINE_DATA !== 'undefined' && MINE_DATA?.ask);
+const askState = () => ({ prompt: MINE_DATA?.ask || '', pieces: BANDISHES, raags: RAAGS, taals: TAALS, mine: new Set((MINE_DATA?.pieces || []).map(p => p.id)),
+  last: PREFS.practised || {}, done: PREFS.done || {}, notes: PREFS.notes || {}, today: dayKey(), plan: riyazPlan(), budget: planBudget() });
+// the quiet action, where a piece, a rāg or the day offers it (nothing on the shared site)
+const askBtn = (kind, id = '', label = 'Ask Claude about this') => (ASK_ON ? `<button type="button" class="linkbtn askbtn" data-ask="${kind}" data-id="${id}">${label}</button>` : '');
+async function askWrite(text) {
+  try { await navigator.clipboard.writeText(text); return true; } catch {}
+  // no clipboard permission (an older Safari, a page not in front): the old way, through a selection
+  const ta = Object.assign(document.createElement('textarea'), { value: text }); ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
+  document.body.append(ta); ta.select();
+  let ok = false; try { ok = document.execCommand('copy'); } catch {}
+  ta.remove(); return ok;
+}
+async function askCopy(btn) {
+  const text = askText(askState(), btn.dataset.ask, btn.dataset.id), was = btn.dataset.was || btn.textContent;
+  const ok = !!text && await askWrite(text);
+  btn.dataset.was = was; btn.textContent = ok ? 'Copied. Paste it into Claude.' : 'Couldn’t copy it';
+  btn.classList.toggle('said', true);
+  clearTimeout(btn._t); btn._t = setTimeout(() => { btn.textContent = was; btn.classList.remove('said'); }, 2400);
+}
+if (typeof document !== 'undefined' && document.addEventListener) document.addEventListener('click', e => { const b = e.target.closest('[data-ask]'); if (b) { e.preventDefault(); askCopy(b); } });
+/* ------------------------------------------------------------------ *
+ *  The steps of learning a piece, under its title: Listen, Line by line, the whole piece (with tablā where it has a
+ *  tāl), From memory. Your teacher's order: listen first, the plain tune before anything else, on the beat, then
+ *  without help. Each row opens the tool that does it; the round tick is yours to set when a step is steady, and
+ *  the first step not yet ticked is marked as next. Kept per piece (PREFS.steps = { id: how many are done }).
+ *  From memory opens Perform with the melody silent (MEL_OFF, 06-audio.js): the tablā keeps time and the page
+ *  keeps your place. Perform's own "From memory" button turns it on and off there.
+ * ------------------------------------------------------------------ */
+/* ---- pure, tested (tests/steps.test.cjs) ---- */
+const STEPS = [
+  { k: 'listen', n: 'Listen', w: () => 'Hear it through first, more than once' },
+  { k: 'lines', n: 'Line by line', w: () => 'The plain tune, a line at a time, sung back' },
+  { k: 'whole', n: free => (free ? 'The whole piece' : 'With tablā'), w: free => (free ? 'All of it in one go, with the app' : 'All of it on the beat, landing on sam') },
+  { k: 'memory', n: 'From memory', w: free => (free ? 'The melody off: you sing, the page keeps your place' : 'The melody off: the tablā keeps time, you sing') },
+];
+// tapping a step's tick: an open step is done along with those before it; a done one opens again, and those after it
+const stepTap = (done, i) => (i < done ? i : i + 1);
+const stepsFor = (done, free) => STEPS.map((s, i) => ({ k: s.k, name: typeof s.n === 'function' ? s.n(free) : s.n, why: s.w(free), done: i < done, now: i === done }));
+/* ---- end pure ---- */
+
+const stepsDone = id => Math.max(0, Math.min(STEPS.length, +(PREFS.steps?.[id]) || 0));
+const stepsOn = b => ['bandish', 'bhajan'].includes(b.kind) && b.sections.length > 0;
+function stepsHTML(b) {
+  if (!stepsOn(b)) return '';
+  const free = b.mode === 'notebook' || b.taal === 'free', rows = stepsFor(stepsDone(b.id), free);
+  return `<div class="steps-w"><p class="steps-k">Learn it in this order</p><ol class="steps">${rows.map((s, i) => `<li class="step${s.done ? ' done' : ''}${s.now ? ' now' : ''}">
+    <button type="button" class="stck" data-steptick="${i}" aria-pressed="${s.done}" aria-label="${s.name}: ${s.done ? 'done, tap to open it again' : 'mark it steady'}"><i>✓</i></button>
+    <button type="button" class="stgo" data-step="${s.k}"><span class="stn">${s.name}${s.now ? '<em>next</em>' : ''}</span><span class="stw">${s.why}</span></button></li>`).join('')}</ol></div>`;
+}
+function stepGo(k) {
+  if (k === 'listen') { stop(); togglePlay(); return; } // the app plays it from the top, the page following
+  if (k === 'lines') { $('learn').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' }); return $('learnPlay').focus({ preventScroll: true }); }
+  pfMemory(k === 'memory'); openPerform();
+}
+// Perform with the melody silent or sounding: said on its button, and heard at once if something is playing
+function pfMemory(on) {
+  MEL_OFF = !!on;
+  const b = $('pfMemory'); if (b) b.setAttribute('aria-pressed', MEL_OFF);
+  if (session?.mel && ctx) session.mel.gain.setTargetAtTime(melLevel(), ctx.currentTime, 0.05);
+}
+if (typeof document !== 'undefined' && document.addEventListener) document.addEventListener('click', e => {
+  const tick = e.target.closest('[data-steptick]'), go = e.target.closest('[data-step]');
+  if (tick) {
+    const i = +tick.dataset.steptick, was = stepsDone(B.id), now = stepTap(was, i);
+    savePref('steps', { ...PREFS.steps, [B.id]: now });
+    renderHeader();
+    if (now > was) $('header').querySelectorAll('.step')[i]?.classList.add('ticked'); // the tick pops as Home's does
+    $('header').querySelector(`[data-steptick="${i}"]`)?.focus({ preventScroll: true });
+  } else if (go) stepGo(go.dataset.step);
+  else if (e.target.closest('#pfMemory')) pfMemory(!MEL_OFF);
+});
 /* ------------------------------------------------------------------ *
  *  Your recordings: a page of every recording on this device (Recordings, beside Alankars · Bandishes · Bhajans,
  *  or #recordings), a small library of your own.
@@ -11967,6 +12326,7 @@ function initRecVideo() {
  *  - Today's riyāz (the plan from 09-controls' riyazPlan), ticked off in place, with Start: it opens the next
  *    item in Perform
  *  - Continue: the piece you had open last, beside Sing freely
+ *  - one sentence after practice (what to fix next time), and the last one you wrote at the head of today's plan
  *  - How to learn, Your progress, recent recordings as small pitch lines, and the library: a card per kind
  *  The piece page stays built underneath (the one you had open last), so leaving Home is instant.
  * ------------------------------------------------------------------ */
@@ -12018,10 +12378,32 @@ const homeRing = (n, of) => {
   return `<svg class="hring" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="21" class="t"/><circle cx="24" cy="24" r="21" class="f" style="stroke-dasharray:${C.toFixed(1)};stroke-dashoffset:${(C * (1 - k)).toFixed(1)}"/></svg><span class="hring-n"><b>${n}</b>/${of}</span>`;
 };
 
+/* ---- one sentence after practice: pure, tested (tests/day-note.test.cjs) ----
+ * After practice you listen back and write one sentence: what to fix next time. It's kept by day
+ * (PREFS.notes = { 'YYYY-MM-DD': text }) and is the first thing in the next day's plan. */
+const noteDays = (a, b) => Math.round((new Date(b + 'T12:00') - new Date(a + 'T12:00')) / 864e5);
+// the last sentence written before today, while it's still fresh (two weeks); today's own is never "last time"
+function noteLast(notes, today, within = 14) {
+  const day = Object.keys(notes || {}).filter(k => k < today && String(notes[k] || '').trim()).sort().pop();
+  return day && noteDays(day, today) <= within ? { day, text: notes[day].trim(), ago: noteDays(day, today) } : null;
+}
+// a day's sentence written or cleared (an emptied one leaves nothing behind)
+function noteSet(notes, day, text) {
+  const out = { ...(notes || {}) }, t = String(text || '').replace(/\s+/g, ' ').slice(0, 280);
+  if (t.trim()) out[day] = t; else delete out[day];
+  return out;
+}
+// a backup's sentences joined with this device's: every day from both, this device's own kept where both wrote
+const noteMerge = (mine, theirs) => ({ ...(theirs || {}), ...(mine || {}) });
+/* ---- end one sentence ---- */
+const noteGrow = ta => { ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px'; };
+
 function renderHome(enter = true) {
   const el = $('home'), byId = id => BANDISHES.find(b => b.id === id);
+  // a redraw (a tick, the plan sheet closing) mustn't take the sentence out from under the hand writing it
+  const writing = document.activeElement?.id === 'homeNote' ? [document.activeElement.selectionStart, document.activeElement.selectionEnd] : null;
   // the ring, the heading and Start count what the day needs; an optional item (Revise) waits after them
-  const items = riyazPlan().filter(it => byId(it.id)), must = items.filter(it => !it.optional), done = must.filter(it => doneToday(it.id)).length;
+  const items = riyazPlan().filter(it => it.go || byId(it.id)), must = items.filter(it => !it.optional), done = must.filter(it => doneToday(it.id)).length;
   const next = must.find(it => !doneToday(it.id)), extra = !next && items.find(it => it.optional && !doneToday(it.id));
   const s = streak(), hr = new Date().getHours();
   const hello = hr < 5 ? 'Late-night practice' : hr < 12 ? 'Good morning' : hr < 17 ? 'Good afternoon' : 'Good evening';
@@ -12029,10 +12411,13 @@ function renderHome(enter = true) {
   const mon = new Date(); mon.setDate(mon.getDate() - ((mon.getDay() + 6) % 7));
   const week = Array.from({ length: 7 }, (_, i) => { const d = new Date(mon); d.setDate(mon.getDate() + i); return dayKey(d); });
   const dayN = week.filter(k => PREFS.done?.[k]?.length).length;
+  const nameOf = it => (it.go ? it.name : homeName(byId(it.id))), budget = planBudget();
   const last = byId(PREFS.last), lastWhen = last && PREFS.practised?.[last.id];
   const kinds = [['alankar', 'Alankars', 'warm-ups in any rāg'], ['bandish', 'Bandishes', `in ${new Set(BANDISHES.filter(b => b.kind === 'bandish').map(b => b.raagId)).size} rāgs`], ['bhajan', 'Bhajans', 'with their words']]
     .map(([k, label, sub]) => [k, label, sub, BANDISHES.filter(b => b.kind === k).length]).filter(x => x[3]);
   let i = 0; const at = () => `style="--i:${i++}"`;
+  const prev = noteLast(PREFS.notes, today), did = !!PREFS.done?.[today]?.length, mine = PREFS.notes?.[today] || '';
+  const prevDay = prev && (prev.ago === 1 ? 'yesterday' : new Date(prev.day + 'T12:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
 
   el.classList.toggle('enter', enter);
   el.innerHTML = `<div class="hin">
@@ -12049,12 +12434,16 @@ function renderHome(enter = true) {
     <section class="htoday" ${at()} aria-label="Today's practice">
       <div class="ht-top"><div><p class="hk">Today’s practice</p><h2>${!items.length ? 'Star a piece to practice it daily' : !next ? 'All done for today' : done ? 'Keep going' : 'Ready when you are'}</h2></div>
         <div class="hring-w" id="homeRing">${homeRing(done, must.length)}</div></div>
+      ${prev ? `<p class="hnote-last"><span class="hk">Last time you wrote · ${prevDay}</span>${homeEsc(prev.text)}</p>` : ''}
+      ${items.length ? `<div class="hbud" role="group" aria-label="How long today">${PLAN_BUDGETS.map(m => `<button type="button" class="hbud-b" data-hmins="${m}" aria-pressed="${m === budget}">${m}</button>`).join('<i>·</i>')}<span class="hbud-u">min</span><span class="hbud-t">${planMins(items)} min planned</span></div>` : ''}
       <div class="ht-list">${items.map(it => { const b = byId(it.id), on = doneToday(it.id); return `<div class="htrow${on ? ' done' : ''}" data-row="${it.id}">
-        <button type="button" class="hck press" data-hdone="${it.id}" aria-pressed="${on}" aria-label="Mark ${homeEsc(homeName(b))} practiced">✓</button>
-        <a class="htgo" href="#${it.id}"><span class="htk">${it.kind}${it.optional ? ' · optional' : ''}</span><span class="htn">${homeEsc(homeName(b))}</span><span class="htw">${b.kind === 'alankar' ? '' : `${homeKind(b).replace('Rāg ', '')} · `}${homeEsc(it.why)}</span></a></div>`; }).join('')}</div>
-      <div class="ht-act">${next ? `<button type="button" class="btn hstart press" data-hstart="${next.id}"><span class="tri"></span>${done ? 'Carry on' : 'Start today’s practice'}<span class="hs-next">${homeEsc(homeName(byId(next.id)))}</span></button>`
-        : extra ? `<button type="button" class="btn hstart press" data-hstart="${extra.id}"><span class="tri"></span>Revise too<span class="hs-next">${homeEsc(homeName(byId(extra.id)))}</span></button>` : ''}
-        <button type="button" class="linkbtn hplan" data-hplan>Plan and week</button></div>
+        <button type="button" class="hck press" data-hdone="${it.id}" aria-pressed="${on}" aria-label="Mark ${homeEsc(nameOf(it))} practiced">✓</button>
+        <a class="htgo" href="${planHref(it)}" data-hrow="${it.id}"><span class="htk">${it.kind}${it.optional ? ' · optional' : ''}</span><span class="htn">${homeEsc(nameOf(it))}</span><span class="htw">${it.go || b.kind === 'alankar' ? '' : `${homeKind(b).replace('Rāg ', '')} · `}${homeEsc(it.why)}</span></a>
+        <span class="htm">${it.mins} min</span></div>`; }).join('')}</div>
+      ${did || mine ? `<label class="hnote"><span class="hk">Listen back, then one sentence</span><textarea id="homeNote" rows="1" maxlength="280" enterkeyhint="done" placeholder="What will you fix next time?">${homeEsc(mine)}</textarea><span class="hnote-w">You’ll see this first next time</span></label>` : ''}
+      <div class="ht-act">${next ? `<button type="button" class="btn hstart press" data-hstart="${next.id}"><span class="tri"></span>${done ? 'Carry on' : 'Start today’s practice'}<span class="hs-next">${homeEsc(nameOf(next))}</span></button>`
+        : extra ? `<button type="button" class="btn hstart press" data-hstart="${extra.id}"><span class="tri"></span>Revise too<span class="hs-next">${homeEsc(nameOf(extra))}</span></button>` : ''}
+        <button type="button" class="linkbtn hplan" data-hplan>Plan and week</button>${askBtn('today', '', 'Ask Claude about today').replace('askbtn', 'askbtn hplan')}</div>
     </section>
 
     <section class="hgrid">
@@ -12076,6 +12465,8 @@ function renderHome(enter = true) {
     </section>
   </div>`;
   if (enter) setTimeout(() => el.classList.remove('enter'), 1200); // later redraws don't replay the entrance
+  const ta = $('homeNote');
+  if (ta) { noteGrow(ta); if (writing) { ta.focus({ preventScroll: true }); ta.setSelectionRange(...writing); } }
   homeRecordings(); homeProgress();
 }
 
@@ -12114,7 +12505,7 @@ function initHome() {
   if (pl && typeof IntersectionObserver === 'function') new IntersectionObserver(([e]) => pl.classList.toggle('away', !e.isIntersecting)).observe(pl);
   const el = $('home');
   el.addEventListener('click', e => {
-    const t = e.target.closest('[data-hprog], [data-hlearn], [data-hhowto], [data-hfree], [data-hdone], [data-hstart], [data-hplan], [data-hall], [data-hrec], [data-hkind], [data-hbackup]');
+    const t = e.target.closest('[data-hprog], [data-hlearn], [data-hhowto], [data-hfree], [data-hdone], [data-hstart], [data-hmins], [data-hrow], [data-hplan], [data-hall], [data-hrec], [data-hkind], [data-hbackup]');
     if (!t) return;
     const d = t.dataset;
     if ('hprog' in d) return progOpen();
@@ -12122,6 +12513,8 @@ function initHome() {
     if ('hhowto' in d) return howtoOpen();
     if ('hfree' in d) return freeOpen();
     if (d.hdone) return homeTick(d.hdone);
+    if (d.hmins) { savePref('planMins', +d.hmins); renderHome(false); return el.querySelector(`[data-hmins="${d.hmins}"]`)?.focus({ preventScroll: true }); }
+    if (d.hrow) { const it = riyazPlan().find(x => x.id === d.hrow); return it && planEnter(it); } // then the link's own address opens it
     if (d.hstart) return homeRunStart(d.hstart);
     if ('hplan' in d) return $('riyazBtn').click();
     if ('hall' in d) return recLibOpen();
@@ -12129,15 +12522,23 @@ function initHome() {
     if (d.hkind) return UI.goKind?.(d.hkind);
     if ('hbackup' in d) return recBackup().then(() => homeOn() && renderHome(false));
   });
+  // the sentence saves as it's written (no Save button); Return finishes it
+  el.addEventListener('input', e => { if (e.target.id !== 'homeNote') return; savePref('notes', noteSet(PREFS.notes, dayKey(), e.target.value)); noteGrow(e.target); });
+  el.addEventListener('keydown', e => { if (e.target.id === 'homeNote' && e.key === 'Enter') { e.preventDefault(); e.target.blur(); } });
   // the Riyāz sheet can tick things too: Home follows when it closes
   $('rzClose').addEventListener('click', () => homeOn() && renderHome(false));
 }
 
 /* Today's riyāz, one after another: Start opens the next item in Perform with a bar along the bottom (a dot per
- * item, "2 of 4", and Done · next). Done ticks the piece and goes straight on to the next in Perform; after the
+ * item, "2 of 4", and Done · next). The run is the day's pieces; the parts that aren't pieces open on their own. Done ticks the piece and goes straight on to the next in Perform; after the
  * last it comes back to Home with the ring full. ✕ out of Perform ends the run, back on Home. */
 const RUN = { on: false };
-function homeRunStart(id) { RUN.on = true; selectBandish(id); openPerform(); homeRunBar(); }
+function homeRunStart(id) {
+  const it = riyazPlan().find(x => x.id === id);
+  if (it) planEnter(it);
+  if (it?.go) { location.hash = planHref(it); return; } // Sa and breath, the rāg's walk, your own ālāp: not Perform's to play
+  RUN.on = true; selectBandish(id); openPerform(); homeRunBar();
+}
 // the run goes through what the day needs; an optional item only when you started it (Revise too)
 const homeRunItems = () => riyazPlan().filter(it => BANDISHES.some(b => b.id === it.id) && (!it.optional || it.id === B.id));
 function homeRunNext() {
@@ -12255,6 +12656,7 @@ function initControls() {
   };
   initLibrary();
   initRiyaz();
+  initSound();
   initPerform();
   initPitch();
   initRecs();
@@ -12392,7 +12794,7 @@ function initControls() {
     if (saved >= 0 && saved <= 1) $(id).value = saved;
     $(id).addEventListener('input', () => {
       fillRange($(id));
-      if (session) session[key].gain.setTargetAtTime(+$(id).value * mult, ctx.currentTime, 0.02);
+      if (session && !(key === 'mel' && MEL_OFF)) session[key].gain.setTargetAtTime(+$(id).value * mult, ctx.currentTime, 0.02);
     });
     $(id).addEventListener('change', () => savePref('volume', { ...PREFS.volume, [id]: +$(id).value }));
   };
@@ -12427,7 +12829,8 @@ function initControls() {
     $('mini').classList.toggle('alk', !$('speedRow').hidden);
     $('miniSpeed').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v === $('speed').value));
   };
-  new MutationObserver(mirrorControls).observe($('speedRow').closest('.settingsCard'), { subtree: true, attributes: true, attributeFilter: ['class', 'hidden'] });
+  { const seen = new MutationObserver(mirrorControls); // Speed is on the page, Loop in the Sound and playback sheet
+    for (const card of document.querySelectorAll('.settingsCard')) seen.observe(card, { subtree: true, attributes: true, attributeFilter: ['class', 'hidden'] }); }
   mirrorControls();
   $('header').addEventListener('click', e => {
     if (e.target.closest('[data-act="play"]')) togglePlay();
@@ -12858,6 +13261,7 @@ function openPerform() {
   $('perform').requestFullscreen?.()?.catch?.(() => {}); // not every browser allows it; the view works either way
 }
 function closePerform() {
+  pfMemory(false); // the melody comes back with the page
   psingCancel(); psingTakeOff(); $('pfSum').hidden = true;
   pfCancelCount();
   $('pfRun').hidden = true;
@@ -12990,46 +13394,97 @@ function streak() {
   while (PREFS.done?.[dayKey(d)]?.length) { n++; d.setDate(d.getDate() - 1); }
   return n;
 }
-function riyazPlan() {
-  const today = dayKey();
-  const PLAN_V = 5; // a plan saved by an older rule (two to revise, no piece of the week, revise not optional, My practice) is made again
-  // the same plan all day, but a star given or taken today shows at once (Daily follows the stars)
-  if (PREFS.plan?.date === today && PREFS.plan.v === PLAN_V) {
-    const keep = PREFS.plan.items.filter(it => it.kind !== 'Daily');
-    const daily = dailyStars().filter(id => !keep.some(it => it.id === id && it.kind !== 'Revise')), rest = keep.filter(it => !daily.includes(it.id));
-    const at = rest.findIndex(it => it.kind === 'Revise'), last = PREFS.practised || {};
-    const add = daily.map(id => ({ id, kind: 'Daily', why: last[id] && last[id] !== today ? `your pick · last practiced ${ago(daysAgo(last[id]))}` : 'your pick' }));
-    return at < 0 ? [...rest, ...add] : [...rest.slice(0, at), ...add, ...rest.slice(at)];
-  }
-  const byId = id => BANDISHES.find(b => b.id === id);
-  const last = PREFS.practised || {};
-  const items = [];
-  // warm-up: the alankar after the last one practiced
-  const alks = BANDISHES.filter(b => b.kind === 'alankar');
+/* ---- the day's plan: pure, tested (tests/plan.test.cjs) ----
+ * A day in the order a class teaches it: Sa and breath, a warm-up alankar in this week's rāg, the rāg's phrases,
+ * this week's piece, your starred pieces, something of your own, and one old piece. planParts picks the day's
+ * parts once (kept in PREFS.plan for the day, so ticking the warm-up doesn't move it on); planFit trims them to
+ * the time there is. Parts with an id like part-sur aren't pieces: they open Sing freely or a rāg's page (go). */
+const PLAN_BUDGETS = [15, 30, 45], PLAN_OVER = 3; // minutes to choose from; how far over a day may run before something leaves
+// minutes for each part at 15 · 30 · 45 (0: the part waits for a longer day)
+const PLAN_MINS = { sur: [2, 3, 5], warm: [4, 5, 8], lesson: [0, 5, 6], phrases: [0, 2, 4], week: [8, 10, 16], daily: [0, 4, 5], make: [0, 5, 7], revise: [0, 5, 6] };
+const PLAN_DROP = ['phrases', 'make', 'lesson', 'daily']; // what leaves first when a day is still too full; Sa, the warm-up and the piece never do
+const planGap = (a, b) => Math.round((new Date(b + 'T12:00') - new Date(a + 'T12:00')) / 864e5);
+const planAgo = n => n === 0 ? 'today' : n === 1 ? 'yesterday' : `${n} days ago`;
+const planDailyRow = (id, last, today) => ({ id, part: 'daily', kind: 'Daily', why: last[id] && last[id] !== today ? `your pick · last practiced ${planAgo(planGap(last[id], today))}` : 'your pick' });
+function planParts({ today, pieces, last = {}, stars = [], lessons = false }) {
+  const byId = id => pieces.find(b => b.id === id), has = id => !!byId(id)?.sections.length;
+  const since = id => (last[id] ? planGap(last[id], today) : 9999);
+  const parts = [];
+  const classes = pieces.filter(b => b.kind === 'lesson').sort((a, b) => b.date.localeCompare(a.date));
+  // this week: the piece from the latest class, every day until the next one (or two weeks without one)
+  const lastClass = classes.find(b => b.pieces?.some(has));
+  const week = lastClass && planGap(lastClass.date, today) <= 14 ? lastClass.pieces.find(has) : null;
+  const mine = stars.filter(id => id !== week && byId(id));
+  // today's rāg: this week's piece's, or else your first pick's
+  const lead = byId(week || mine[0]), raag = lead && lead.kind !== 'alankar' && lead.raagId ? { id: lead.raagId, name: lead.raagName } : null;
+  parts.push({ id: 'part-sur', part: 'sur', kind: 'Sur', go: 'free', name: 'Sa and breath', why: 'Long notes on Sa, Pa and tār Sa, each against the tanpura' });
+  // warm-up: the alankar after the last one practiced, in today's rāg
+  const alks = pieces.filter(b => b.kind === 'alankar');
   const lastAlk = alks.map(b => b.id).filter(id => last[id]).sort((a, b) => last[b].localeCompare(last[a]))[0];
   const warm = alks[(alks.findIndex(b => b.id === lastAlk) + 1) % alks.length];
-  if (warm) items.push({ id: warm.id, kind: 'Warm-up', why: 'Barābar, then dugun' });
-  // the most recent class with phrases to sing
-  const lesson = BANDISHES.filter(b => b.kind === 'lesson' && (b.sections.length || b.pieces?.length)).sort((a, b) => b.date.localeCompare(a.date))[0];
-  // with the homework from its notes, if the guru set some
+  if (warm) parts.push({ id: warm.id, part: 'warm', kind: 'Warm-up', why: raag ? `In ${raag.name} · barābar, then dugun` : 'Barābar, then dugun', ...(raag ? { raag: raag.id } : {}) });
+  // the most recent class with phrases to sing, with the homework from its notes, if the guru set some
+  const lesson = classes.find(b => b.sections.length || b.pieces?.length);
   const homework = lesson?.poemNote?.split('<br>').map(l => l.match(/^\s*homework\s*:\s*(.+)/i)?.[1]).find(Boolean);
-  if (lesson && SHOW_LESSONS) items.push({ id: lesson.id, kind: 'Last class', why: homework ? `${lesson.pick.split(' · ')[0]} · Homework: ${homework}` : lesson.pick.split(' · ')[0] });
-  // this week: the piece from the latest class, every day until the next one (or two weeks without one)
-  const lastClass = BANDISHES.filter(b => b.kind === 'lesson' && b.pieces?.some(id => byId(id)?.sections.length))
-    .sort((a, b) => b.date.localeCompare(a.date))[0];
-  const week = lastClass && daysAgo(lastClass.date) <= 14 ? lastClass.pieces.find(id => byId(id)?.sections.length) : null;
-  if (week) items.push({ id: week, kind: 'This week', why: `from class ${ago(daysAgo(lastClass.date))}${last[week] === today ? '' : last[week] ? ` · last practiced ${ago(daysAgo(last[week]))}` : ''}` });
-  // starred pieces, least recently practiced first
-  const stale = id => last[id] ? daysAgo(last[id]) : 9999;
-  const mine = dailyStars().filter(id => id !== week);
-  for (const id of mine) items.push({ id, kind: 'Daily', why: last[id] && last[id] !== today ? `your pick · last practiced ${ago(daysAgo(last[id]))}` : 'your pick' });
-  // revise: the one piece learned in class that has waited longest (two a day was more than a day holds)
-  const learned = [...new Set(BANDISHES.filter(b => b.kind === 'lesson').flatMap(b => b.pieces || []))]
-    .filter(id => id !== week && !mine.includes(id) && byId(id)?.sections.length && stale(id) >= 7).sort((a, b) => stale(b) - stale(a));
-  // optional: it's there for a day with time to spare, and the day is done without it
-  for (const id of learned.slice(0, 1)) items.push({ id, kind: 'Revise', optional: true, why: last[id] ? `last practiced ${ago(daysAgo(last[id]))}` : 'learned in class, not practiced here yet' });
-  savePref('plan', { date: today, v: PLAN_V, items });
+  if (lesson && lessons) parts.push({ id: lesson.id, part: 'lesson', kind: 'Last class', why: homework ? `${lesson.pick.split(' · ')[0]} · Homework: ${homework}` : lesson.pick.split(' · ')[0] });
+  if (raag) parts.push({ id: 'part-phrases', part: 'phrases', kind: 'Phrases', go: 'raag', raag: raag.id, name: `The walk of ${raag.name}`, why: 'Listen to its pakad, āroh and avaroh, then sing each back' });
+  if (week) parts.push({ id: week, part: 'week', kind: 'This week', why: `from class ${planAgo(planGap(lastClass.date, today))} · one line slow, then all of it with tablā` });
+  for (const id of mine) parts.push(planDailyRow(id, last, today));
+  parts.push({ id: 'part-make', part: 'make', kind: 'Make', go: 'free', ...(raag ? { raag: raag.id } : {}), name: 'An ālāp of your own', why: `Sing freely${raag ? ` in ${raag.name}` : ''} · record it, then listen back` });
+  // revise: an old piece from class, from the rāg that has gone longest unsung (so every rāg comes back), and in it the
+  // piece that has waited longest. Optional: it's there for a day with time to spare, and the day is done without it
+  const rk = b => b.raagId || b.id, sung = {};
+  for (const b of pieces) if (b.kind !== 'alankar' && b.kind !== 'lesson' && last[b.id]) sung[rk(b)] = Math.min(sung[rk(b)] ?? 9999, since(b.id));
+  const rg = b => sung[rk(b)] ?? 9999;
+  const old = [...new Set(classes.flatMap(b => b.pieces || []))].filter(id => id !== week && !mine.includes(id) && has(id) && since(id) >= 7).map(byId)
+    .sort((a, b) => rg(b) - rg(a) || since(b.id) - since(a.id))[0];
+  if (old) parts.push({ id: old.id, part: 'revise', kind: 'Revise', optional: true,
+    why: rg(old) >= 14 && rg(old) < 9999 ? `not sung for ${rg(old)} days` : last[old.id] ? `last practiced ${planAgo(since(old.id))}` : 'learned in class, not practiced here yet' });
+  return parts;
+}
+// the same plan all day, but a star given or taken today shows at once (Daily follows the stars)
+function planDaily(parts, { today, pieces, last = {}, stars = [] }) {
+  const week = parts.find(p => p.part === 'week')?.id, ids = stars.filter(id => id !== week && pieces.some(b => b.id === id));
+  const rest = parts.filter(p => p.part !== 'daily' && !(p.part === 'revise' && ids.includes(p.id)));
+  const at = rest.findIndex(p => p.part === 'make' || p.part === 'revise'), add = ids.map(id => planDailyRow(id, last, today));
+  return at < 0 ? [...rest, ...add] : [...rest.slice(0, at), ...add, ...rest.slice(at)];
+}
+// the parts that fit the time there is, each with its minutes. Without a piece from class the first of your own
+// picks is the day's piece: it has the piece's minutes and never leaves
+function planFit(parts, budget = 30) {
+  const col = Math.max(0, PLAN_BUDGETS.indexOf(budget)), lead = parts.some(p => p.part === 'week') ? null : parts.find(p => p.part === 'daily');
+  const items = parts.map(p => ({ ...p, mins: PLAN_MINS[p === lead ? 'week' : p.part][col] })).filter(p => p.mins);
+  for (const part of PLAN_DROP) while (planMins(items) > budget + PLAN_OVER) {
+    const i = items.map(p => p.part === part && p.id !== lead?.id && !p.optional).lastIndexOf(true);
+    if (i < 0) break;
+    items.splice(i, 1);
+  }
   return items;
+}
+const planMins = items => items.filter(p => !p.optional).reduce((a, p) => a + p.mins, 0);
+/* ---- end plan ---- */
+const planBudget = () => (PLAN_BUDGETS.includes(PREFS.planMins) ? PREFS.planMins : 30);
+function riyazPlan() {
+  const today = dayKey(), PLAN_V = 6; // a plan saved by an older rule (before the day had parts and a length) is made again
+  const state = { today, pieces: BANDISHES, last: PREFS.practised || {}, stars: dailyStars(), lessons: SHOW_LESSONS };
+  let parts = PREFS.plan?.date === today && PREFS.plan.v === PLAN_V ? planDaily(PREFS.plan.items, state) : null;
+  if (!parts) { parts = planParts(state); savePref('plan', { date: today, v: PLAN_V, items: parts }); }
+  return planFit(parts, planBudget());
+}
+// where a row of the plan leads, and what it sets on the way: the warm-up opens in today's rāg, Sing freely too
+const planHref = it => it.go === 'free' ? '#sing' : it.go === 'raag' ? `#raags/${it.raag}` : `#${it.id}`;
+function planEnter(it) {
+  if (it.go === 'free' && it.raag) savePref('freeRaag', it.raag);
+  if (it.part === 'warm' && it.raag && it.raag !== alankarRaag && RAAGS.some(r => r.id === it.raag && r.scale)) {
+    alankarRaag = it.raag; savePref('raag', it.raag); UI.alkRaagSet?.(it.raag);
+    if (B.id === it.id) selectBandish(it.id); // already open: sing it again in the new rāg
+  }
+}
+// a take kept in Sing freely (half a minute or more) ticks the day's next sung part: Sa and breath, then your own ālāp
+function planFreeTake(secs) {
+  if (!(secs >= 30)) return;
+  const it = riyazPlan().find(x => x.go === 'free' && !doneToday(x.id));
+  if (it) toggleDone(it.id);
 }
 // this week (Monday to today): days practiced, what was practiced and how often, and what's waiting
 function renderWeek() {
@@ -13062,21 +13517,33 @@ function renderRiyaz() {
   if (PF.rzMode === 'week') return renderWeek();
   const items = riyazPlan(), byId = id => BANDISHES.find(b => b.id === id), must = items.filter(it => !it.optional);
   const n = must.filter(it => doneToday(it.id)).length, s = streak();
-  $('rzTitle').textContent = `Today’s practice · ${n}/${must.length}`;
+  $('rzTitle').textContent = `Today’s practice · ${n}/${must.length} · ${planMins(items)} min`;
   const strip = Array.from({ length: 14 }, (_, i) => { const d = new Date(); d.setDate(d.getDate() - 13 + i); const k = dayKey(d);
     return `<span class="rzd${PREFS.done?.[k]?.length ? ' on' : ''}${i === 13 ? ' today' : ''}" title="${k}"></span>`; }).join('');
   $('rzWeek').innerHTML = `<div class="rzs">${s ? `<b>${s}-day streak</b>` : 'Start a streak today'} · last 2 weeks</div><div class="rzstrip">${strip}</div>`;
-  $('rzList').innerHTML = items.map(it => { const b = byId(it.id); if (!b) return '';
-    const name = b.kind === 'lesson' ? b.pick.split(' · ').slice(1).join(' · ') : b.pick.split(' · ')[1];
+  $('rzList').innerHTML = items.map(it => { const b = byId(it.id); if (!b && !it.go) return '';
+    const name = it.go ? it.name : b.kind === 'lesson' ? b.pick.split(' · ').slice(1).join(' · ') : b.pick.split(' · ')[1];
     return `<div class="rzrow${doneToday(it.id) ? ' done' : ''}">
       <button type="button" class="rzck" data-done="${it.id}" aria-label="Mark ${name} practiced" aria-pressed="${doneToday(it.id)}">✓</button>
-      <a class="rzgo" href="#${it.id}" data-go="${it.id}"><span class="rzk">${it.kind}${it.optional ? ' · optional' : ''}</span><span class="rzn">${name}</span><span class="rzw">${b.kind === 'lesson' ? '' : `${b.raagName} · `}${it.why}</span></a>
+      <a class="rzgo" href="${planHref(it)}" ${it.go ? `data-part="${it.id}"` : `data-go="${it.id}"`}><span class="rzk">${it.kind}${it.optional ? ' · optional' : ''}</span><span class="rzn">${name}</span><span class="rzw">${it.go || b.kind === 'lesson' || b.kind === 'alankar' ? '' : `${b.raagName} · `}${it.why}</span></a>
+      <span class="rzm">${it.mins} min</span>
     </div>`; }).join('') + `<p class="lhint">Tick each one as you finish it. You can also tap “Mark practiced today” on any page. ${starred().length ? '' : `Star a piece (☆) to practice it daily (${STAR_MAX} at most).`}</p>`;
 }
 function renderRiyazDot() {
-  const items = PREFS.plan?.date === dayKey() ? PREFS.plan.items : null;
+  const items = PREFS.plan?.date === dayKey() ? riyazPlan() : null;
   $('riyazDot').classList.toggle('on', !!items && items.every(it => it.optional || doneToday(it.id)));
   if (!$('riyaz').hidden) renderRiyaz();
+}
+// Sound and playback: the settings that rarely change (instrument, Sa, volumes, loop, speed up) live in a sheet opened
+// from the player, so the notation sits right under it. What changes with the piece (an alankar's rāg and speed, the
+// section) stays on the page.
+function initSound() {
+  const sheet = $('sound'), btn = $('soundBtn');
+  const close = () => { if (sheet.hidden) return; sheet.hidden = true; document.body.style.overflow = ''; btn.focus({ preventScroll: true }); };
+  btn.addEventListener('click', () => { sheet.hidden = false; document.body.style.overflow = 'hidden'; $('soundClose').focus({ preventScroll: true }); });
+  $('soundClose').addEventListener('click', close);
+  sheet.addEventListener('click', e => { if (e.target === sheet) close(); });
+  sheet.addEventListener('keydown', e => { if (e.key === 'Escape') { e.stopPropagation(); close(); } });
 }
 function initRiyaz() {
   const sheet = $('riyaz');
@@ -13088,8 +13555,10 @@ function initRiyaz() {
     if (e.target === sheet) return close();
     const ck = e.target.closest('[data-done]');
     if (ck) { toggleDone(ck.dataset.done); renderRiyaz(); if (B.id === ck.dataset.done) renderHeader(); return; }
+    const part = e.target.closest('[data-part]');
+    if (part) { close(); const it = riyazPlan().find(x => x.id === part.dataset.part); if (it) planEnter(it); return; } // the link's own address opens it
     const go = e.target.closest('[data-go]');
-    if (go) { e.preventDefault(); close(); selectBandish(go.dataset.go); window.scrollTo(0, 0); }
+    if (go) { const it = riyazPlan().find(x => x.id === go.dataset.go); if (it) planEnter(it); e.preventDefault(); close(); selectBandish(go.dataset.go); window.scrollTo(0, 0); }
   });
   sheet.addEventListener('keydown', e => { if (e.key === 'Escape') { e.stopPropagation(); close(); } });
   renderRiyazDot();
